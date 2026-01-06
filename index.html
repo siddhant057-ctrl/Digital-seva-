@@ -3,208 +3,2083 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Banda Ki Seva | Ration Order</title>
-
+<title>Banda Ki Seva | Smart Ration Order</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
-body{margin:0;font-family:Arial;background:#f2f2f2}
-header{background:#0a8f3c;color:#fff;padding:12px;text-align:center;font-size:20px;font-weight:bold}
-.categories{display:flex;overflow-x:auto;background:#fff;padding:10px}
-.cat-btn{padding:8px 14px;background:#eee;border-radius:20px;margin-right:8px;font-size:14px;cursor:pointer;white-space:nowrap}
-.cat-btn.active{background:#0a8f3c;color:#fff}
-.items{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;padding:10px}
-.item{background:#fff;border-radius:10px;padding:8px;text-align:center;box-shadow:0 2px 6px rgba(0,0,0,.1)}
-.item h4{margin:6px 0;font-size:14px}
-.qty{display:flex;justify-content:space-between;align-items:center}
-.qty button{width:28px;height:28px;border:none;background:#0a8f3c;color:#fff;font-size:18px;border-radius:50%}
-.cart{position:fixed;bottom:0;left:0;right:0;background:#fff;padding:10px;box-shadow:0 -2px 6px rgba(0,0,0,.2)}
-.cart button{width:100%;padding:10px;background:#25D366;border:none;color:#fff;font-size:16px;border-radius:8px;margin-top:6px}
-.removeBtn{
- background:red;color:#fff;border:none;
- border-radius:4px;padding:2px 6px;
- margin-left:6px;cursor:pointer
-}
+    :root {
+        --primary: #0a8f3c;
+        --primary-light: #4caf50;
+        --primary-dark: #07762e;
+        --secondary: #ff9800;
+        --light: #f8f9fa;
+        --dark: #333;
+        --gray: #6c757d;
+        --light-gray: #e9ecef;
+        --danger: #f44336;
+        --warning: #ffc107;
+        --info: #2196f3;
+        --shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        --radius: 15px;
+        --radius-sm: 10px;
+    }
+
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: 'Segoe UI', 'Arial', sans-serif;
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        color: var(--dark);
+        line-height: 1.6;
+        min-height: 100vh;
+        padding-bottom: 80px;
+    }
+
+    /* Header */
+    .header {
+        background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+        color: white;
+        padding: 15px 20px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 5px solid var(--secondary);
+    }
+
+    .logo {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .logo-icon {
+        background: white;
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    .logo-icon i {
+        font-size: 28px;
+        color: var(--primary);
+    }
+
+    .logo-text h1 {
+        font-size: 22px;
+        font-weight: 700;
+        text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
+    }
+
+    .logo-text span {
+        font-size: 14px;
+        opacity: 0.9;
+        font-weight: normal;
+    }
+
+    .user-badge {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        background: rgba(255, 255, 255, 0.2);
+        padding: 8px 15px;
+        border-radius: 30px;
+        font-size: 14px;
+    }
+
+    .cart-icon {
+        position: relative;
+        font-size: 24px;
+        cursor: pointer;
+        background: white;
+        width: 45px;
+        height: 45px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--primary);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    }
+
+    .cart-count {
+        position: absolute;
+        top: -5px;
+        right: -5px;
+        background: var(--danger);
+        color: white;
+        font-size: 12px;
+        width: 22px;
+        height: 22px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        border: 2px solid white;
+    }
+
+    /* Welcome Section */
+    .welcome-section {
+        padding: 20px;
+        text-align: center;
+        background: linear-gradient(135deg, #ffffff 0%, #f0f9ff 100%);
+        border-radius: 0 0 var(--radius) var(--radius);
+        margin-bottom: 20px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .welcome-icon {
+        font-size: 48px;
+        color: var(--primary);
+        margin-bottom: 10px;
+        animation: bounce 2s infinite;
+    }
+
+    @keyframes bounce {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-10px); }
+    }
+
+    .welcome-text h2 {
+        font-size: 24px;
+        color: var(--primary-dark);
+        margin-bottom: 10px;
+    }
+
+    /* Pricing Rules Display */
+    .rules-section {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 15px;
+        margin: 20px;
+        padding: 20px;
+        background: white;
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+    }
+
+    .rule-card {
+        background: #f8f9fa;
+        padding: 15px;
+        border-radius: var(--radius-sm);
+        border-left: 4px solid var(--primary);
+    }
+
+    .rule-card h4 {
+        color: var(--primary-dark);
+        margin-bottom: 8px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .rule-card p {
+        font-size: 14px;
+        color: var(--gray);
+    }
+
+    /* Categories Navigation */
+    .categories {
+        display: flex;
+        overflow-x: auto;
+        background: white;
+        padding: 15px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        position: sticky;
+        top: 70px;
+        z-index: 999;
+        scrollbar-width: none;
+        margin: 0 20px;
+        border-radius: var(--radius-sm);
+    }
+
+    .categories::-webkit-scrollbar {
+        display: none;
+    }
+
+    .cat-btn {
+        padding: 12px 24px;
+        background: var(--light-gray);
+        border-radius: 30px;
+        margin-right: 10px;
+        font-size: 16px;
+        cursor: pointer;
+        white-space: nowrap;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        border: 2px solid transparent;
+        font-weight: 600;
+        color: var(--dark);
+    }
+
+    .cat-btn:hover {
+        background: var(--primary);
+        color: white;
+        transform: scale(1.05);
+    }
+
+    .cat-btn.active {
+        background: var(--primary);
+        color: white;
+        border-color: var(--primary-dark);
+        box-shadow: 0 4px 8px rgba(10, 143, 60, 0.2);
+    }
+
+    /* Main Content */
+    .container {
+        padding: 20px;
+    }
+
+    /* Items Grid */
+    .items-container {
+        margin-top: 20px;
+    }
+
+    .items-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        background: white;
+        padding: 15px 20px;
+        border-radius: var(--radius-sm);
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    }
+
+    .items-title {
+        font-size: 22px;
+        color: var(--primary-dark);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .search-box {
+        position: relative;
+        width: 300px;
+    }
+
+    .search-box input {
+        width: 100%;
+        padding: 12px 20px 12px 45px;
+        border-radius: 30px;
+        border: 2px solid #ddd;
+        font-size: 16px;
+        background: white;
+        transition: border-color 0.3s;
+    }
+
+    .search-box input:focus {
+        outline: none;
+        border-color: var(--primary);
+    }
+
+    .search-box i {
+        position: absolute;
+        left: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--gray);
+    }
+
+    .items-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 20px;
+        margin-top: 20px;
+    }
+
+    .item-card {
+        background: white;
+        border-radius: var(--radius);
+        overflow: hidden;
+        box-shadow: var(--shadow);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        border: 2px solid transparent;
+        position: relative;
+    }
+
+    .item-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+        border-color: var(--primary-light);
+    }
+
+    .price-badge {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background: var(--secondary);
+        color: white;
+        padding: 5px 10px;
+        border-radius: 20px;
+        font-size: 14px;
+        font-weight: bold;
+        z-index: 2;
+    }
+
+    .min-qty-badge {
+        position: absolute;
+        top: 40px;
+        right: 10px;
+        background: var(--info);
+        color: white;
+        padding: 5px 10px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: bold;
+        z-index: 2;
+    }
+
+    .item-header {
+        padding: 15px;
+        background: linear-gradient(to right, #e8f5e9, #c8e6c9);
+        border-bottom: 1px solid #eaeaea;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .item-category {
+        background: var(--primary);
+        color: white;
+        padding: 5px 12px;
+        border-radius: 20px;
+        font-size: 13px;
+        font-weight: 600;
+    }
+
+    .item-body {
+        padding: 20px;
+    }
+
+    .item-name {
+        font-size: 20px;
+        font-weight: 700;
+        margin-bottom: 10px;
+        color: var(--dark);
+        min-height: 60px;
+    }
+
+    .item-price {
+        color: var(--primary);
+        font-size: 24px;
+        font-weight: 700;
+        margin-bottom: 15px;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .item-price span {
+        font-size: 14px;
+        color: var(--gray);
+        font-weight: normal;
+    }
+
+    .item-controls {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-top: 20px;
+    }
+
+    .qty-controls {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        background: #f5f5f5;
+        padding: 8px 15px;
+        border-radius: 30px;
+    }
+
+    .qty-btn {
+        width: 40px;
+        height: 40px;
+        border: none;
+        background: var(--primary);
+        color: white;
+        font-size: 20px;
+        border-radius: 50%;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: background 0.3s;
+    }
+
+    .qty-btn:hover {
+        background: var(--primary-dark);
+        transform: scale(1.1);
+    }
+
+    .qty-display {
+        font-size: 20px;
+        font-weight: 700;
+        min-width: 40px;
+        text-align: center;
+        color: var(--dark);
+    }
+
+    .add-to-cart {
+        background: var(--secondary);
+        color: white;
+        border: none;
+        padding: 12px 25px;
+        border-radius: 30px;
+        font-weight: 700;
+        font-size: 16px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        transition: all 0.3s;
+        box-shadow: 0 4px 8px rgba(255, 152, 0, 0.3);
+    }
+
+    .add-to-cart:hover {
+        background: #e68900;
+        transform: scale(1.05);
+    }
+
+    /* Fixed Order Button */
+    .fixed-order-btn {
+        position: fixed;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+        color: white;
+        padding: 18px 40px;
+        border-radius: 50px;
+        font-size: 20px;
+        font-weight: 700;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        box-shadow: 0 6px 20px rgba(10, 143, 60, 0.4);
+        z-index: 1000;
+        transition: all 0.3s;
+        border: none;
+        animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+        0% { box-shadow: 0 6px 20px rgba(10, 143, 60, 0.4); }
+        50% { box-shadow: 0 6px 30px rgba(10, 143, 60, 0.6); }
+        100% { box-shadow: 0 6px 20px rgba(10, 143, 60, 0.4); }
+    }
+
+    .fixed-order-btn:hover {
+        transform: translateX(-50%) scale(1.05);
+        background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+    }
+
+    .fixed-order-btn:disabled {
+        background: #ccc;
+        cursor: not-allowed;
+        animation: none;
+    }
+
+    /* Cart Preview Modal */
+    .cart-preview-modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 1100;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+    }
+
+    .cart-preview-modal.active {
+        display: flex;
+    }
+
+    .cart-preview-content {
+        background: white;
+        width: 100%;
+        max-width: 500px;
+        border-radius: var(--radius);
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        max-height: 80vh;
+        overflow-y: auto;
+    }
+
+    .cart-preview-header {
+        background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+        color: white;
+        padding: 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .cart-preview-header h3 {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 22px;
+    }
+
+    .cart-preview-body {
+        padding: 25px;
+    }
+
+    .cart-items-list {
+        max-height: 300px;
+        overflow-y: auto;
+        margin-bottom: 20px;
+        border-bottom: 2px solid #eee;
+        padding-bottom: 20px;
+    }
+
+    .cart-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 15px 0;
+        border-bottom: 1px solid #f0f0f0;
+    }
+
+    .cart-item:last-child {
+        border-bottom: none;
+    }
+
+    .cart-item-info h4 {
+        font-size: 18px;
+        margin-bottom: 5px;
+    }
+
+    .cart-item-info .category {
+        font-size: 14px;
+        color: var(--gray);
+    }
+
+    .cart-item-controls {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .cart-item-qty {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .cart-item-qty-btn {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        border: none;
+        background: var(--light-gray);
+        color: var(--dark);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+    }
+
+    .cart-item-qty-btn:hover {
+        background: #ddd;
+    }
+
+    .cart-item-price {
+        font-weight: 700;
+        color: var(--primary);
+        min-width: 80px;
+        text-align: right;
+        font-size: 18px;
+    }
+
+    .cart-summary {
+        margin-top: 20px;
+    }
+
+    .summary-row {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 12px;
+        font-size: 17px;
+    }
+
+    .delivery-info-row {
+        color: var(--info);
+        font-weight: 600;
+    }
+
+    .total {
+        font-size: 24px;
+        font-weight: 700;
+        color: var(--primary);
+        margin-top: 15px;
+        padding-top: 15px;
+        border-top: 2px dashed #ddd;
+    }
+
+    .cart-preview-footer {
+        padding: 20px 25px;
+        background: #f8f9fa;
+        display: flex;
+        justify-content: space-between;
+        gap: 15px;
+    }
+
+    .btn {
+        padding: 14px 30px;
+        border-radius: 10px;
+        border: none;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.3s;
+        font-size: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        flex: 1;
+    }
+
+    .btn-secondary {
+        background: var(--light-gray);
+        color: var(--dark);
+    }
+
+    .btn-secondary:hover {
+        background: #ddd;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+        color: white;
+        box-shadow: 0 4px 8px rgba(10, 143, 60, 0.3);
+    }
+
+    .btn-primary:hover {
+        background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+        transform: translateY(-2px);
+    }
+
+    /* Order Form Modal */
+    .order-form-modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 1200;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+    }
+
+    .order-form-modal.active {
+        display: flex;
+    }
+
+    .order-form-content {
+        background: white;
+        width: 100%;
+        max-width: 600px;
+        border-radius: var(--radius);
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        max-height: 90vh;
+        overflow-y: auto;
+    }
+
+    .order-form-header {
+        background: linear-gradient(135deg, var(--secondary), #e68900);
+        color: white;
+        padding: 20px;
+        text-align: center;
+    }
+
+    .order-form-header h3 {
+        font-size: 24px;
+        margin-bottom: 5px;
+    }
+
+    .order-form-header p {
+        opacity: 0.9;
+    }
+
+    .order-form-body {
+        padding: 25px;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 600;
+        color: var(--dark);
+        font-size: 16px;
+    }
+
+    .form-group input, .form-group textarea, .form-group select {
+        width: 100%;
+        padding: 15px;
+        border-radius: 10px;
+        border: 2px solid #ddd;
+        font-size: 16px;
+        font-family: inherit;
+        transition: border-color 0.3s;
+    }
+
+    .form-group input:focus, .form-group textarea:focus, .form-group select:focus {
+        outline: none;
+        border-color: var(--primary);
+    }
+
+    .auto-fill-note {
+        background: #e8f5e9;
+        padding: 10px 15px;
+        border-radius: 8px;
+        margin-bottom: 15px;
+        font-size: 14px;
+        color: var(--primary-dark);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .auto-fill-note i {
+        color: var(--primary);
+    }
+
+    .order-summary-box {
+        background: #f8f9fa;
+        border-radius: 10px;
+        padding: 20px;
+        margin-top: 20px;
+        border: 2px solid #eaeaea;
+    }
+
+    .order-summary-box h4 {
+        margin-bottom: 15px;
+        color: var(--primary-dark);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 18px;
+    }
+
+    .order-form-footer {
+        padding: 25px;
+        background: #f8f9fa;
+        display: flex;
+        justify-content: center;
+    }
+
+    .submit-order-btn {
+        background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+        color: white;
+        border: none;
+        padding: 18px 50px;
+        border-radius: 15px;
+        font-size: 20px;
+        font-weight: 700;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        transition: all 0.3s;
+        box-shadow: 0 6px 20px rgba(10, 143, 60, 0.4);
+        width: 100%;
+        justify-content: center;
+    }
+
+    .submit-order-btn:hover {
+        background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(10, 143, 60, 0.5);
+    }
+
+    .submit-order-btn:disabled {
+        background: #ccc;
+        cursor: not-allowed;
+        transform: none;
+        box-shadow: none;
+    }
+
+    /* Toast Notification */
+    .toast {
+        position: fixed;
+        bottom: 30px;
+        right: 30px;
+        background: var(--primary);
+        color: white;
+        padding: 18px 25px;
+        border-radius: 10px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        z-index: 1300;
+        transform: translateX(100px);
+        opacity: 0;
+        transition: transform 0.4s, opacity 0.4s;
+        max-width: 350px;
+    }
+
+    .toast.show {
+        transform: translateX(0);
+        opacity: 1;
+    }
+
+    .toast i {
+        font-size: 24px;
+    }
+
+    .toast-message {
+        font-size: 16px;
+        font-weight: 600;
+    }
+
+    /* Success Modal */
+    .success-modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.7);
+        z-index: 1400;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+    }
+
+    .success-modal.active {
+        display: flex;
+    }
+
+    .success-content {
+        background: white;
+        width: 100%;
+        max-width: 500px;
+        border-radius: var(--radius);
+        overflow: hidden;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+        text-align: center;
+        padding: 40px;
+    }
+
+    .success-icon {
+        font-size: 80px;
+        color: var(--primary);
+        margin-bottom: 20px;
+        animation: successAnimation 1s;
+    }
+
+    @keyframes successAnimation {
+        0% { transform: scale(0); }
+        70% { transform: scale(1.2); }
+        100% { transform: scale(1); }
+    }
+
+    .success-content h2 {
+        font-size: 28px;
+        color: var(--primary-dark);
+        margin-bottom: 15px;
+    }
+
+    .success-content p {
+        color: var(--gray);
+        margin-bottom: 25px;
+        font-size: 17px;
+    }
+
+    .success-btn {
+        background: var(--primary);
+        color: white;
+        border: none;
+        padding: 15px 30px;
+        border-radius: 10px;
+        font-size: 18px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: background 0.3s;
+        margin-top: 20px;
+        width: 100%;
+    }
+
+    .success-btn:hover {
+        background: var(--primary-dark);
+    }
+
+    /* Empty State */
+    .empty-state {
+        text-align: center;
+        padding: 50px 20px;
+        color: var(--gray);
+        background: white;
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        margin-top: 20px;
+    }
+
+    .empty-state i {
+        font-size: 60px;
+        margin-bottom: 20px;
+        opacity: 0.5;
+        color: var(--primary-light);
+    }
+
+    .empty-state h3 {
+        font-size: 22px;
+        margin-bottom: 10px;
+        color: var(--dark);
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .header {
+            flex-direction: column;
+            gap: 15px;
+            padding: 15px;
+        }
+        
+        .user-badge {
+            order: 1;
+            width: 100%;
+            justify-content: center;
+            margin-top: 10px;
+        }
+        
+        .logo {
+            width: 100%;
+            justify-content: center;
+        }
+        
+        .rules-section {
+            grid-template-columns: 1fr;
+        }
+        
+        .search-box {
+            width: 100%;
+            margin-top: 15px;
+        }
+        
+        .items-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 15px;
+        }
+        
+        .items-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .cat-btn {
+            padding: 10px 20px;
+            font-size: 15px;
+        }
+        
+        .fixed-order-btn {
+            width: 90%;
+            justify-content: center;
+            padding: 15px 20px;
+            font-size: 18px;
+        }
+        
+        .btn {
+            padding: 12px 20px;
+            font-size: 15px;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .welcome-text h2 {
+            font-size: 20px;
+        }
+        
+        .items-title {
+            font-size: 20px;
+        }
+        
+        .item-name {
+            font-size: 18px;
+        }
+        
+        .item-price {
+            font-size: 22px;
+        }
+        
+        .cart-preview-footer, .order-form-footer {
+            flex-direction: column;
+        }
+        
+        .toast {
+            left: 20px;
+            right: 20px;
+            bottom: 20px;
+            max-width: none;
+        }
+    }
+
+    /* Category Colors */
+    .cat-dal .item-header { background: linear-gradient(to right, #fff3e0, #ffe0b2); }
+    .cat-rice .item-header { background: linear-gradient(to right, #e8f5e9, #c8e6c9); }
+    .cat-flour .item-header { background: linear-gradient(to right, #f3e5f5, #e1bee7); }
+    .cat-spice .item-header { background: linear-gradient(to right, #e0f2f1, #b2dfdb); }
+    .cat-oil .item-header { background: linear-gradient(to right, #fff8e1, #ffecb3); }
+    .cat-snack .item-header { background: linear-gradient(to right, #fce4ec, #f8bbd9); }
+    .cat-sugar .item-header { background: linear-gradient(to right, #e8eaf6, #c5cae9); }
 </style>
 </head>
-
 <body>
 
+<!-- Header -->
+<header class="header">
+    <div class="logo">
+        <div class="logo-icon">
+            <i class="fas fa-shopping-basket"></i>
+        </div>
+        <div class="logo-text">
+            <h1>Banda Ki Seva</h1>
+            <span>स्मार्ट राशन ऑर्डरिंग</span>
+        </div>
+    </div>
+    
+    <div class="user-badge">
+        <i class="fas fa-map-marker-alt"></i>
+        <span id="colonyName">Swaraj Colony</span>
+        <div class="cart-icon" onclick="showCartPreview()">
+            <i class="fas fa-shopping-cart"></i>
+            <div class="cart-count" id="cartCount">0</div>
+        </div>
+    </div>
+</header>
+
+<!-- Welcome Section -->
+<div class="welcome-section">
+    <div class="welcome-icon">
+        <i class="fas fa-hand-holding-heart"></i>
+    </div>
+    <div class="welcome-text">
+      <h2>🎯 स्मार्ट प्राइसिंग नियम 🎯</h2>
+        <p>अब ऑर्डर करना और भी स्मार्ट! देखें नए नियम:</p>
+    </div>
+</div>
+
+<!-- Pricing Rules Display -->
+<div class="rules-section">
+    <div class="rule-card">
+        <h4><i class="fas fa-rupee-sign"></i> डिलीवरी चार्ज</h4>
+        <p>• ₹100 से कम ऑर्डर: ₹20 डिलीवरी चार्ज</p>
+        <p>• ₹100 या अधिक ऑर्डर: ₹10 डिलीवरी चार्ज</p>
+    </div>
+    
+    <div class="rule-card">
+        <h4><i class="fas fa-box"></i> मिनिमम क्वांटिटी</h4>
+        <p>• ₹1 वस्तु: कम से कम 10 पीस</p>
+        <p>• ₹2 वस्तु: कम से कम 5 पीस</p>
+        <p>• ₹3 वस्तु: कम से कम 3 पीस</p>
+        <p>• ₹4 वस्तु: कम से कम 2 पीस</p>
+        <p>• ₹5 वस्तु: कम से कम 2 पीस</p>
+        <p>• ₹5+ वस्तु: कम से कम 1 पीस</p>
+    </div>
+    
+    <div class="rule-card">
+        <h4><i class="fas fa-user-check"></i> कस्टमर सुविधा</h4>
+        <p>• फॉर्म एक बार भरें, हमेशा के लिए सेव रहेगा</p>
+        <p>• अगले ऑर्डर में ऑटो-फिल होगा</p>
+        <p>• आसान और तेज़ ऑर्डर प्रक्रिया</p>
+    </div>
+</div>
+
+<!-- Categories Navigation -->
+<div class="categories" id="categoriesContainer">
+    <!-- Categories will be dynamically added -->
+</div>
+
+<!-- Main Content -->
+<div class="container">
+    <div class="items-container">
+        <div class="items-header">
+            <h2 class="items-title">
+                <i class="fas fa-store"></i>
+                उत्पाद सूची
+            </h2>
+            <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" id="searchInput" placeholder="क्या खरीदना चाहते हैं? यहाँ लिखें...">
+            </div>
+        </div>
+        
+        <!-- Items Grid -->
+        <div class="items-grid" id="itemsGrid">
+            <!-- Items will be dynamically added -->
+            <div class="empty-state">
+                <i class="fas fa-search"></i>
+                <h3>उत्पाद लोड हो रहे हैं...</h3>
+                <p>कृपया थोड़ी देर प्रतीक्षा करें</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Fixed Order Button -->
+<button class="fixed-order-btn" id="fixedOrderBtn" onclick="showOrderForm()" disabled>
+    <i class="fas fa-paper-plane"></i>
+    <span>ऑर्डर सबमिट करें</span>
+    <i class="fas fa-arrow-right"></i>
+</button>
+
+<!-- Cart Preview Modal -->
+<div class="cart-preview-modal" id="cartPreviewModal">
+    <div class="cart-preview-content">
+        <div class="cart-preview-header">
+            <h3><i class="fas fa-shopping-cart"></i> आपकी टोकरी</h3>
+            <i class="fas fa-times close-modal" onclick="hideCartPreview()"></i>
+        </div>
+        
+        <div class="cart-preview-body">
+            <div class="cart-items-list" id="cartItemsList">
+                <!-- Cart items will be dynamically added -->
+                <div class="empty-state" style="padding: 30px;">
+                    <i class="fas fa-shopping-basket"></i>
+                    <h3>आपकी टोकरी खाली है</h3>
+                    <p>उत्पाद जोड़ने के लिए + बटन पर क्लिक करें</p>
+                </div>
+            </div>
+            
+            <div class="cart-summary">
+                <div class="summary-row">
+                    <span>कुल आइटम:</span>
+                    <span id="previewTotalItems">0</span>
+                </div>
+                <div class="summary-row">
+                    <span>उत्पाद मूल्य:</span>
+                    <span id="previewSubtotal">₹0</span>
+                </div>
+                <div class="summary-row delivery-info-row" id="deliveryInfoRow">
+                    <span>डिलीवरी शुल्क:</span>
+                    <span id="previewDelivery">₹0</span>
+                </div>
+                <div class="summary-row total">
+                    <span>कुल राशि:</span>
+                    <span id="previewTotalAmount">₹0</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="cart-preview-footer">
+            <button class="btn btn-secondary" onclick="hideCartPreview()">
+                <i class="fas fa-shopping"></i>
+                खरीदारी जारी रखें
+            </button>
+            <button class="btn btn-primary" onclick="showOrderForm()">
+                <i class="fas fa-check-circle"></i>
+                ऑर्डर देना है
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Order Form Modal -->
+<div class="order-form-modal" id="orderFormModal">
+    <div class="order-form-content">
+        <div class="order-form-header">
+            <h3>📝 आखिरी स्टेप! 📝</h3>
+            <p>अपना विवरण भरें और ऑर्डर सबमिट करें</p>
+        </div>
+        
+        <div class="order-form-body">
+            <div class="auto-fill-note">
+                <i class="fas fa-info-circle"></i>
+                <span>आपका विवरण पहले से सेव है! सिर्फ एक बार भरना होगा।</span>
+            </div>
+            
+            <div class="form-group">
+                <label for="customerName"><i class="fas fa-user"></i> आपका नाम *</label>
+                <input type="text" id="customerName" placeholder="अपना पूरा नाम लिखें">
+            </div>
+            
+            <div class="form-group">
+                <label for="customerPhone"><i class="fas fa-phone"></i> फोन नंबर *</label>
+                <input type="tel" id="customerPhone" placeholder="अपना 10-अंकीय मोबाइल नंबर">
+            </div>
+            
+            <div class="form-group">
+                <label for="customerAddress"><i class="fas fa-home"></i> पूरा पता *</label>
+                <textarea id="customerAddress" rows="3" placeholder="मकान नंबर, गली नंबर, कॉलोनी का नाम"></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label for="deliveryTime"><i class="fas fa-clock"></i> डिलीवरी समय</label>
+                <select id="deliveryTime">
+                    <option value="10:00-12:00">सुबह 10:00 - 12:00</option>
+                    <option value="12:00-14:00" selected>दोपहर 12:00 - 2:00</option>
+                    <option value="14:00-16:00">दोपहर 2:00 - 4:00</option>
+                    <option value="16:00-18:00">शाम 4:00 - 6:00</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="orderNotes"><i class="fas fa-sticky-note"></i> विशेष निर्देश (अगर कोई हो)</label>
+                <textarea id="orderNotes" rows="2" placeholder="उदाहरण: सामने वाले दरवाजे पर डिलीवरी करें"></textarea>
+            </div>
+            
+            <div class="order-summary-box">
+                <h4><i class="fas fa-receipt"></i> आपका ऑर्डर सारांश</h4>
+                <div id="orderSummaryContent"></div>
+                <div class="summary-row delivery-info-row">
+                    <span>डिलीवरी शुल्क:</span>
+                    <span id="orderFormDelivery">₹0</span>
+                </div>
+                <div class="summary-row total">
+                    <span>कुल राशि:</span>
+                    <span id="orderFormTotal">₹0</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="order-form-footer">
+            <button class="submit-order-btn" onclick="submitOrder()" id="submitOrderBtn">
+                <i class="fas fa-check-circle"></i>
+                ऑर्डर सबमिट करें
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Success Modal -->
+<div class="success-modal" id="successModal">
+    <div class="success-content">
+        <div class="success-icon">
+            <i class="fas fa-check-circle"></i>
+        </div>
+        <h2>🎉 ऑर्डर सफल! 🎉</h2>
+        <p>आपका ऑर्डर सफलतापूर्वक सबमिट हो गया है।</p>
+        <p>अब आपका फॉर्म सेव हो गया है, अगली बार ऑटो-फिल होगा!</p>
+        <p><strong>आपका ऑर्डर आईडी: <span id="orderId">BKSR-12345</span></strong></p>
+        <button class="success-btn" onclick="hideSuccessModal()">
+            <i class="fas fa-home"></i>
+            वापस शॉपिंग करें
+        </button>
+    </div>
+</div>
+
+<!-- Toast Notification -->
+<div class="toast" id="toast">
+    <i class="fas fa-check-circle"></i>
+    <div class="toast-message" id="toastMessage">आइटम टोकरी में जोड़ा गया</div>
+</div>
+
 <script>
-let colony = prompt("आप किस कॉलोनी से हैं?");
-if(colony !== "Swaraj Colony"){
- alert("❌ सेवा सिर्फ Swaraj Colony के लिए है");
- document.body.innerHTML="";
-}
+    // Telegram Bot Configuration
+    const TELEGRAM_BOT_TOKEN = "7729928604:AAEINikbhwHTMSK1pgV3nR0UfSGEVb-z2r4";
+    const TELEGRAM_CHAT_ID = "6798434092";
+    const WHATSAPP_PHONE = "916351598832";
+    
+    // Minimum quantity rules
+    const MIN_QUANTITY_RULES = {
+        1: 10,   // ₹1 items: min 10 pieces
+        2: 5,    // ₹2 items: min 5 pieces
+        3: 3,    // ₹3 items: min 3 pieces
+        4: 2,    // ₹4 items: min 2 pieces
+        5: 2     // ₹5 items: min 2 pieces
+        // Above ₹5: min 1 piece
+    };
+
+    // Product Database with Minimum Quantity Info
+    const products = [
+        { id: 1, category: "दाल", name: "चना दाल", unit: "किलो", price: 90, minQty: 1, icon: "🌱", emoji: "🟡", colorClass: "cat-dal" },
+        { id: 2, category: "दाल", name: "अरहर दाल", unit: "किलो", price: 120, minQty: 1, icon: "🌱", emoji: "🟠", colorClass: "cat-dal" },
+        { id: 3, category: "दाल", name: "मूंग दाल", unit: "किलो", price: 110, minQty: 1, icon: "🌱", emoji: "🟢", colorClass: "cat-dal" },
+        { id: 4, category: "दाल", name: "उड़द दाल", unit: "किलो", price: 130, minQty: 1, icon: "🌱", emoji: "⚫", colorClass: "cat-dal" },
+        // Low price items for testing minimum quantity rules
+        { id: 5, category: "चावल", name: "सस्ता चावल", unit: "किलो", price: 1, minQty: 10, icon: "🍚", emoji: "⚪", colorClass: "cat-rice" },
+        { id: 6, category: "चावल", name: "मध्यम चावल", unit: "किलो", price: 2, minQty: 5, icon: "🍚", emoji: "⚪", colorClass: "cat-rice" },
+        { id: 7, category: "चावल", name: "बासमती चावल", unit: "किलो", price: 100, minQty: 1, icon: "🍚", emoji: "⚪", colorClass: "cat-rice" },
+        { id: 8, category: "आटा", name: "सस्ता आटा", unit: "किलो", price: 3, minQty: 3, icon: "🌾", emoji: "🟡", colorClass: "cat-flour" },
+        { id: 9, category: "आटा", name: "गेहूं आटा", unit: "किलो", price: 40, minQty: 1, icon: "🌾", emoji: "🟡", colorClass: "cat-flour" },
+        { id: 10, category: "मसाला", name: "सस्ती हल्दी", unit: "50 ग्राम", price: 4, minQty: 2, icon: "🌶️", emoji: "🟡", colorClass: "cat-spice" },
+        { id: 11, category: "मसाला", name: "हल्दी पाउडर", unit: "100 ग्राम", price: 20, minQty: 1, icon: "🌶️", emoji: "🟡", colorClass: "cat-spice" },
+        { id: 12, category: "मसाला", name: "धनिया पाउडर", unit: "100 ग्राम", price: 25, minQty: 1, icon: "🌶️", emoji: "🟢", colorClass: "cat-spice" },
+        { id: 13, category: "तेल", name: "सस्ता तेल", unit: "500 ml", price: 5, minQty: 2, icon: "🛢️", emoji: "🟡", colorClass: "cat-oil" },
+        { id: 14, category: "तेल", name: "सरसों तेल", unit: "लीटर", price: 180, minQty: 1, icon: "🛢️", emoji: "🟡", colorClass: "cat-oil" },
+        { id: 15, category: "तेल", name: "सोयाबीन तेल", unit: "लीटर", price: 160, minQty: 1, icon: "🛢️", emoji: "🟡", colorClass: "cat-oil" },
+        { id: 16, category: "नमकीन", name: "मिक्स नमकीन", unit: "पैकेट", price: 50, minQty: 1, icon: "🥨", emoji: "🟠", colorClass: "cat-snack" },
+        { id: 17, category: "नमकीन", name: "भुजिया", unit: "पैकेट", price: 40, minQty: 1, icon: "🥨", emoji: "🟠", colorClass: "cat-snack" },
+        { id: 18, category: "नमकीन", name: "चिवड़ा", unit: "पैकेट", price: 35, minQty: 1, icon: "🥨", emoji: "🟡", colorClass: "cat-snack" },
+        { id: 19, category: "चीनी", name: "सफेद चीनी", unit: "किलो", price: 45, minQty: 1, icon: "🍬", emoji: "⚪", colorClass: "cat-sugar" },
+        { id: 20, category: "चीनी", name: "ब्राउन शुगर", unit: "किलो", price: 60, minQty: 1, icon: "🍬", emoji: "🟤", colorClass: "cat-sugar" }
+    ];
+
+    // Categories with Emojis
+    const categories = [
+        { id: "all", name: "सभी उत्पाद", icon: "📦", emoji: "🌟" },
+        { id: "दाल", name: "दालें", icon: "🌱", emoji: "🟡" },
+        { id: "चावल", name: "चावल", icon: "🍚", emoji: "⚪" },
+        { id: "आटा", name: "आटा", icon: "🌾", emoji: "🟡" },
+        { id: "मसाला", name: "मसाले", icon: "🌶️", emoji: "🔴" },
+        { id: "तेल", name: "तेल", icon: "🛢️", emoji: "🟡" },
+        { id: "नमकीन", name: "नमकीन", icon: "🥨", emoji: "🟠" },
+        { id: "चीनी", name: "चीनी", icon: "🍬", emoji: "⚪" }
+    ];
+
+    // Application State
+    let cart = {};
+    let currentColony = "Swaraj Colony";
+    
+    // DOM Elements
+    const categoriesContainer = document.getElementById('categoriesContainer');
+    const itemsGrid = document.getElementById('itemsGrid');
+    const cartCount = document.getElementById('cartCount');
+    const fixedOrderBtn = document.getElementById('fixedOrderBtn');
+    const cartPreviewModal = document.getElementById('cartPreviewModal');
+    const cartItemsList = document.getElementById('cartItemsList');
+    const previewTotalItems = document.getElementById('previewTotalItems');
+    const previewSubtotal = document.getElementById('previewSubtotal');
+    const previewDelivery = document.getElementById('previewDelivery');
+    const previewTotalAmount = document.getElementById('previewTotalAmount');
+    const deliveryInfoRow = document.getElementById('deliveryInfoRow');
+    const orderFormModal = document.getElementById('orderFormModal');
+    const orderSummaryContent = document.getElementById('orderSummaryContent');
+    const orderFormDelivery = document.getElementById('orderFormDelivery');
+    const orderFormTotal = document.getElementById('orderFormTotal');
+    const submitOrderBtn = document.getElementById('submitOrderBtn');
+    const successModal = document.getElementById('successModal');
+    const toast = document.getElementById('toast');
+    const toastMessage = document.getElementById('toastMessage');
+    const searchInput = document.getElementById('searchInput');
+    const colonyName = document.getElementById('colonyName');
+    const orderId = document.getElementById('orderId');
+
+    // Initialize the application
+    function initApp() {
+        // Check if user is from Swaraj Colony
+        const savedColony = localStorage.getItem('userColony');
+        
+        if (savedColony) {
+            currentColony = savedColony;
+            colonyName.textContent = currentColony;
+        } else {
+            // Simple colony check
+            showWelcomeMessage();
+        }
+        
+        // Load cart from localStorage
+        const savedCart = localStorage.getItem('cart');
+        if (savedCart) {
+            cart = JSON.parse(savedCart);
+        }
+        
+        // Load customer info and auto-fill
+        loadCustomerInfo();
+        
+        renderCategories();
+        renderProducts();
+        updateCartDisplay();
+        
+        // Event listeners
+        searchInput.addEventListener('input', filterProducts);
+        
+        // Focus on search box
+        setTimeout(() => {
+            searchInput.focus();
+        }, 500);
+    }
+
+    // Show welcome message
+    function showWelcomeMessage() {
+        const colony = prompt("👋 नमस्ते! आप किस कॉलोनी से हैं?\n\nउदाहरण: Swaraj Colony");
+        if (colony) {
+            if (colony.toLowerCase().includes("swaraj") || colony.toLowerCase().includes("colony")) {
+                currentColony = colony;
+                localStorage.setItem('userColony', colony);
+                colonyName.textContent = currentColony;
+                showToast(`🎉 स्वागत है! ${colony} से आपका ऑर्डर स्वीकार किया गया है।`);
+            } else {
+                alert("❌ क्षमा करें! सेवा सिर्फ Swaraj Colony के लिए है।");
+                document.body.innerHTML = `
+                    <div style="text-align:center; padding:50px; font-size:18px; background: linear-gradient(135deg, #f5f7fa, #c3cfe2); min-height:100vh; display:flex; flex-direction:column; justify-content:center; align-items:center;">
+                        <div style="font-size:80px; margin-bottom:20px;">🏠</div>
+                        <h2 style="color:#d32f2f;">❌ सेवा सिर्फ Swaraj Colony के लिए</h2>
+                        <p style="margin-top:20px; color:#555;">कृपया किसी Swaraj Colony निवासी से संपर्क करें।</p>
+                        <button onclick="location.reload()" style="margin-top:30px; padding:15px 30px; background:#0a8f3c; color:white; border:none; border-radius:10px; font-size:18px; cursor:pointer;">
+                            🔄 फिर से कोशिश करें
+                        </button>
+                    </div>
+                `;
+                return;
+            }
+        }
+    }
+
+ // Load customer info from localStorage
+    function loadCustomerInfo() {
+        const customerName = localStorage.getItem('customerName');
+        const customerPhone = localStorage.getItem('customerPhone');
+        const customerAddress = localStorage.getItem('customerAddress');
+        
+        if (customerName) {
+            document.getElementById('customerName').value = customerName;
+        }
+        if (customerPhone) {
+            document.getElementById('customerPhone').value = customerPhone;
+        }
+        if (customerAddress) {
+            document.getElementById('customerAddress').value = customerAddress;
+        }
+    }
+
+    // Get minimum quantity for a price
+    function getMinimumQuantity(price) {
+        if (price <= 5) {
+            return MIN_QUANTITY_RULES[price] || 1;
+        }
+        return 1; // Above ₹5: minimum 1 piece
+    }
+
+    // Render categories with emojis
+    function renderCategories() {
+        categoriesContainer.innerHTML = '';
+        
+        categories.forEach(category => {
+            const catBtn = document.createElement('div');
+            catBtn.className = 'cat-btn';
+            catBtn.setAttribute('data-category', category.id);
+            catBtn.innerHTML = `
+                <span style="font-size:20px;">${category.emoji}</span>
+                <span>${category.name}</span>
+            `;
+            
+            catBtn.addEventListener('click', () => filterByCategory(category.id));
+            
+            // Set first category as active
+            if (category.id === 'all') {
+                catBtn.classList.add('active');
+            }
+            
+            categoriesContainer.appendChild(catBtn);
+        });
+    }
+
+    // Render products with emojis
+    function renderProducts(filteredProducts = products) {
+        itemsGrid.innerHTML = '';
+        
+        if (filteredProducts.length === 0) {
+            itemsGrid.innerHTML = `
+                <div class="empty-state">
+                    <i class="fas fa-search"></i>
+                    <h3>कोई उत्पाद नहीं मिला</h3>
+                    <p>"${searchInput.value}" से मेल खाने वाला कोई उत्पाद नहीं है</p>
+                </div>
+            `;
+            return;
+        }
+        
+        filteredProducts.forEach(product => {
+            const itemCard = document.createElement('div');
+            itemCard.className = `item-card ${product.colorClass}`;
+            itemCard.setAttribute('data-category', product.category);
+            
+            // Get quantity from cart
+            let quantity = 0;
+            if (cart[product.category] && cart[product.category][product.name]) {
+                quantity = cart[product.category][product.name].quantity;
+            }
+            
+            // Get minimum quantity for this price
+            const minQty = getMinimumQuantity(product.price);
+            
+            itemCard.innerHTML = `
+                <div class="price-badge">₹${product.price}</div>
+                <div class="min-qty-badge">कम से कम ${minQty} पीस</div>
+                <div class="item-header">
+                    <div class="item-category">${product.emoji} ${product.category}</div>
+                    <span style="font-size:24px;">${product.icon}</span>
+                </div>
+                <div class="item-body">
+                    <h3 class="item-name">${product.emoji} ${product.name}</h3>
+                    <div class="item-price">₹${product.price} <span>प्रति ${product.unit}</span></div>
+                    <div class="item-controls">
+                        <div class="qty-controls">
+                            <button class="qty-btn" onclick="decrementItem('${product.category}', '${product.name}', ${product.price}, '${product.unit}', ${product.id}, ${minQty})">
+                                <i class="fas fa-minus"></i>
+                            </button>
+                            <div class="qty-display" id="qty-${product.id}">${quantity}</div>
+                            <button class="qty-btn" onclick="addToCart('${product.category}', '${product.name}', ${product.price}, '${product.unit}', ${product.id}, ${minQty})">
+                                <i class="fas fa-plus"></i>
+                            </button>
+                        </div>
+                        <button class="add-to-cart" onclick="addToCart('${product.category}', '${product.name}', ${product.price}, '${product.unit}', ${product.id}, ${minQty})">
+                            <i class="fas fa-cart-plus"></i>
+                            <span>जोड़ें</span>
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            itemsGrid.appendChild(itemCard);
+        });
+    }
+
+    // Filter products by category
+    function filterByCategory(categoryId) {
+        // Update active category button
+        document.querySelectorAll('.cat-btn').forEach(btn => {
+            btn.classList.remove('active');
+            if (btn.getAttribute('data-category') === categoryId) {
+                btn.classList.add('active');
+            }
+        });
+        
+        // Filter products
+        if (categoryId === 'all') {
+            renderProducts(products);
+        } else {
+            const filteredProducts = products.filter(product => product.category === categoryId);
+            renderProducts(filteredProducts);
+        }
+    }
+
+    // Filter products by search
+    function filterProducts() {
+        const searchTerm = searchInput.value.toLowerCase();
+        
+        if (searchTerm.trim() === '') {
+            // If search is empty, show products based on active category
+            const activeCategory = document.querySelector('.cat-btn.active').getAttribute('data-category');
+            if (activeCategory === 'all') {
+                renderProducts(products);
+            } else {
+                const filteredProducts = products.filter(product => product.category === activeCategory);
+                renderProducts(filteredProducts);
+            }
+            return;
+        }
+        
+        const filteredProducts = products.filter(product => 
+            product.name.toLowerCase().includes(searchTerm) || 
+            product.category.toLowerCase().includes(searchTerm)
+        );
+        
+        renderProducts(filteredProducts);
+    }
+
+    // Calculate delivery charge based on new rules
+    function calculateDeliveryCharge(totalPrice) {
+        if (totalPrice < 100) {
+            return 20; // ₹20 for orders below ₹100
+        } else {
+            return 10; // ₹10 for orders ₹100 and above
+        }
+    }
+
+    // Cart functions with minimum quantity enforcement
+    function addToCart(category, name, price, unit, productId, minQty) {
+        // Play sound
+        playSound('add');
+        
+        if (!cart[category]) {
+            cart[category] = {};
+        }
+        
+        if (!cart[category][name]) {
+            // First time adding this item - set to minimum quantity
+            cart[category][name] = {
+                quantity: minQty,
+                price: price,
+                unit: unit,
+                productId: productId,
+                minQty: minQty
+            };
+        } else {
+            // Already in cart - just increment
+            cart[category][name].quantity++;
+        }
+        
+        updateQuantityDisplay(productId, cart[category][name].quantity);
+        saveCart();
+        updateCartDisplay();
+        showToast(`🎉 ${name} कार्ट में जोड़ा गया! (न्यूनतम: ${minQty})`);
+    }
+
+    function decrementItem(category, name, price, unit, productId, minQty) {
+        // Play sound
+        playSound('remove');
+        
+        if (cart[category] && cart[category][name]) {
+            // Check if current quantity is more than minimum
+            if (cart[category][name].quantity > minQty) {
+                cart[category][name].quantity--;
+                updateQuantityDisplay(productId, cart[category][name].quantity);
+                saveCart();
+                updateCartDisplay();
+                showToast(`➖ ${name} कार्ट से हटाया गया`);
+            } else {
+                // At minimum quantity - ask if user wants to remove
+                if (confirm(`क्या आप ${name} को पूरी तरह से कार्ट से हटाना चाहते हैं?\n\nन्यूनतम ${minQty} पीस जोड़ने होंगे।`)) {
+                    delete cart[category][name];
+                    if (Object.keys(cart[category]).length === 0) {
+                        delete cart[category];
+                    }
+                    updateQuantityDisplay(productId, 0);
+                    saveCart();
+                    updateCartDisplay();
+                    showToast(`🗑️ ${name} कार्ट से हटाया गया`);
+                }
+            }
+        }
+    }
+
+    function removeCartItem(category, name, productId) {
+        // Play sound
+        playSound('remove');
+        
+        if (cart[category] && cart[category][name]) {
+            updateQuantityDisplay(productId, 0);
+            delete cart[category][name];
+            if (Object.keys(cart[category]).length === 0) {
+                delete cart[category];
+            }
+            
+            saveCart();
+            updateCartDisplay();
+            updateCartPreview();
+            showToast(`🗑️ ${name} कार्ट से हटाया गया`);
+        }
+    }
+
+    function updateQuantityDisplay(productId, quantity) {
+        const qtyElement = document.getElementById(`qty-${productId}`);
+        if (qtyElement) {
+            qtyElement.textContent = quantity;
+        }
+    }
+
+    function updateCartDisplay() {
+        // Calculate totals
+        let totalCount = 0;
+        let totalPrice = 0;
+        
+        for (const category in cart) {
+            for (const item in cart[category]) {
+                totalCount += cart[category][item].quantity;
+                totalPrice += cart[category][item].quantity * cart[category][item].price;
+            }
+        }
+        
+        // Update cart count
+        cartCount.textContent = totalCount;
+        
+        // Calculate delivery charge based on new rules
+        const deliveryCharge = calculateDeliveryCharge(totalPrice);
+        
+        // Enable/disable order button
+        if (totalCount > 0 && totalPrice >= 100) {
+            fixedOrderBtn.disabled = false;
+            fixedOrderBtn.innerHTML = `
+                <i class="fas fa-paper-plane"></i>
+                <span>ऑर्डर सबमिट करें (₹${totalPrice + deliveryCharge})</span>
+                <i class="fas fa-arrow-right"></i>
+            `;
+        } else if (totalCount > 0 && totalPrice < 100) {
+            fixedOrderBtn.disabled = false;
+            fixedOrderBtn.innerHTML = `
+                <i class="fas fa-paper-plane"></i>
+                <span>ऑर्डर सबमिट करें (₹${totalPrice + deliveryCharge})</span>
+                <i class="fas fa-arrow-right"></i>
+            `;
+        } else {
+            fixedOrderBtn.disabled = true;
+            fixedOrderBtn.innerHTML = `
+                <i class="fas fa-shopping-cart"></i>
+                <span>पहले कार्ट में आइटम जोड़ें</span>
+            `;
+        }
+        
+        // Save cart
+        saveCart();
+    }
+
+    function updateCartPreview() {
+        let cartHTML = '';
+        let totalCount = 0;
+        let totalPrice = 0;
+        
+        for (const category in cart) {
+            for (const item in cart[category]) {
+                const itemData = cart[category][item];
+                const itemTotal = itemData.quantity * itemData.price;
+                totalCount += itemData.quantity;
+                totalPrice += itemTotal;
+                
+                cartHTML += `
+                    <div class="cart-item">
+                        <div class="cart-item-info">
+                            <h4>${item}</h4>
+                            <div class="category">${category} • ${itemData.unit} • न्यूनतम ${itemData.minQty || 1} पीस</div>
+                            <div class="cart-item-qty">
+                                <button class="cart-item-qty-btn" onclick="decrementItem('${category}', '${item}', ${itemData.price}, '${itemData.unit}', ${itemData.productId}, ${itemData.minQty || 1})">
+                                    -
+                                </button>
+                                <span>${itemData.quantity}</span>
+                                <button class="cart-item-qty-btn" onclick="addToCart('${category}', '${item}', ${itemData.price}, '${itemData.unit}', ${itemData.productId}, ${itemData.minQty || 1})">
+                                    +
+                                </button>
+                            </div>
+                        </div>
+                        <div class="cart-item-controls">
+                            <div class="cart-item-price">₹${itemTotal}</div>
+                            <button class="cart-item-qty-btn" style="background:#f44336; color:white;" onclick="removeCartItem('${category}', '${item}', ${itemData.productId})">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+        
+        if (totalCount === 0) {
+            cartItemsList.innerHTML = `
+                <div class="empty-state" style="padding: 30px;">
+                    <i class="fas fa-shopping-basket"></i>
+                    <h3>आपकी टोकरी खाली है</h3>
+                    <p>उत्पाद जोड़ने के लिए + बटन पर क्लिक करें</p>
+                </div>
+            `;
+        } else {
+            cartItemsList.innerHTML = cartHTML;
+        }
+        
+        // Calculate delivery charge based on new rules
+        const deliveryCharge = calculateDeliveryCharge(totalPrice);
+        const finalTotal = totalPrice + deliveryCharge;
+        
+        // Update summary
+        previewTotalItems.textContent = `${totalCount} आइटम`;
+        previewSubtotal.textContent = `₹${totalPrice}`;
+        previewDelivery.textContent = `₹${deliveryCharge}`;
+        previewTotalAmount.textContent = `₹${finalTotal}`;
+        
+        // Update delivery info color based on amount
+        if (totalPrice < 100) {
+            deliveryInfoRow.innerHTML = `
+                <span>डिलीवरी शुल्क (₹100 से कम):</span>
+                <span>₹${deliveryCharge}</span>
+            `;
+        } else {
+            deliveryInfoRow.innerHTML = `
+                <span>डिलीवरी शुल्क (₹100 या अधिक):</span>
+                <span>₹${deliveryCharge}</span>
+            `;
+        }
+        
+        // Update order form summary
+        updateOrderSummary();
+    }
+
+    function updateOrderSummary() {
+        let totalCount = 0;
+        let totalPrice = 0;
+        let summaryHTML = '';
+        
+        for (const category in cart) {
+            summaryHTML += `<p><strong>${category}:</strong></p>`;
+            for (const item in cart[category]) {
+                const itemData = cart[category][item];
+                const itemTotal = itemData.quantity * itemData.price;
+                totalCount += itemData.quantity;
+                totalPrice += itemTotal;
+                
+                summaryHTML += `<p>${item} - ${itemData.quantity} ${itemData.unit} = ₹${itemTotal}</p>`;
+            }
+        }
+        
+        const deliveryCharge = calculateDeliveryCharge(totalPrice);
+        const finalTotal = totalPrice + deliveryCharge;
+        
+        summaryHTML += `<p>न्यूनतम मात्रा नियम लागू हैं</p>`;
+        orderSummaryContent.innerHTML = summaryHTML;
+        orderFormDelivery.textContent = `₹${deliveryCharge}`;
+        orderFormTotal.textContent = `₹${finalTotal}`;
+    }
+
+    function saveCart() {
+        localStorage.setItem('cart', JSON.stringify(cart));
+    }
+
+    // Modal functions
+    function showCartPreview() {
+        updateCartPreview();
+        cartPreviewModal.classList.add('active');
+    }
+
+    function hideCartPreview() {
+        cartPreviewModal.classList.remove('active');
+    }
+
+    function showOrderForm() {
+        if (Object.keys(cart).length === 0) {
+            showToast("⚠️ कृपया पहले कार्ट में कुछ आइटम जोड़ें");
+            return;
+        }
+        
+        // Calculate total
+        let totalPrice = 0;
+        for (const category in cart) {
+            for (const item in cart[category]) {
+                totalPrice += cart[category][item].quantity * cart[category][item].price;
+            }
+        }
+        
+        // Auto-fill customer info
+        loadCustomerInfo();
+        
+        // Update summary
+        updateOrderSummary();
+        
+        // Show modal
+        orderFormModal.classList.add('active');
+    }
+
+    function hideOrderForm() {
+        orderFormModal.classList.remove('active');
+    }
+
+    // Submit order function
+    async function submitOrder() {
+        // Get form values
+        const customerName = document.getElementById('customerName').value.trim();
+        const customerPhone = document.getElementById('customerPhone').value.trim();
+        const customerAddress = document.getElementById('customerAddress').value.trim();
+        const deliveryTime = document.getElementById('deliveryTime').value;
+        const orderNotes = document.getElementById('orderNotes').value.trim();
+        
+        // Validation
+        if (!customerName || !customerPhone || !customerAddress) {
+            showToast("⚠️ कृपया नाम, फोन और पता भरें");
+            return;
+        }
+        
+        if (!/^\d{10}$/.test(customerPhone)) {
+            showToast("⚠️ कृपया सही 10-अंकीय फोन नंबर दर्ज करें");
+            return;
+        }
+        
+        // Disable submit button
+        submitOrderBtn.disabled = true;
+        submitOrderBtn.innerHTML = `
+            <i class="fas fa-spinner fa-spin"></i>
+            ऑर्डर भेजा जा रहा है...
+        `;
+        
+        // Save customer info PERMANENTLY in localStorage
+        localStorage.setItem('customerName', customerName);
+        localStorage.setItem('customerPhone', customerPhone);
+        localStorage.setItem('customerAddress', customerAddress);
+        localStorage.setItem('customerInfoSaved', 'true'); // Flag to indicate info is saved
+        
+        // Prepare order message
+        let message = `🛒 *Banda Ki Seva - नया ऑर्डर* 🛒\n\n`;
+        message += `📝 *ऑर्डर आईडी:* BKSR-${Date.now().toString().slice(-5)}\n`;
+        message += `👤 *ग्राहक:* ${customerName}\n`;
+        message += `📱 *फोन:* ${customerPhone}\n`;
+        message += `🏠 *पता:* ${customerAddress}\n`;
+        message += `📍 *कॉलोनी:* ${currentColony}\n`;
+        message += `⏰ *डिलीवरी समय:* ${deliveryTime}\n`;
+        
+        if (orderNotes) {
+            message += `📋 *निर्देश:* ${orderNotes}\n`;
+        }
+        
+        message += `\n═══════════════\n`;
+        message += `🛍️ *ऑर्डर विवरण:*\n\n`;
+        
+        let totalPrice = 0;
+        let itemCount = 0;
+        
+        for (const category in cart) {
+            message += `*${category}:*\n`;
+            for (const item in cart[category]) {
+                const itemData = cart[category][item];
+                const itemTotal = itemData.quantity * itemData.price;
+                message += `• ${item} - ${itemData.quantity} ${itemData.unit} = ₹${itemTotal}\n`;
+                totalPrice += itemTotal;
+                itemCount += itemData.quantity;
+            }
+            message += `\n`;
+        }
+        
+        const deliveryCharge = calculateDeliveryCharge(totalPrice);
+        const finalTotal = totalPrice + deliveryCharge;
+        
+        message += `═══════════════\n`;
+        message += `💰 *सारांश:*\n`;
+        message += `📦 कुल आइटम: ${itemCount}\n`;
+        message += `💵 उत्पाद मूल्य: ₹${totalPrice}\n`;
+        message += `🚚 डिलीवरी शुल्क: ₹${deliveryCharge}\n`;
+        message += `🎯 *कुल राशि: ₹${finalTotal}*\n\n`;
+        
+        // Add delivery charge note
+        if (totalPrice < 100) {
+            message += `📝 *नोट:* ₹100 से कम ऑर्डर पर ₹20 डिलीवरी चार्ज\n`;
+        } else {
+            message += `📝 *नोट:* ₹100 या अधिक ऑर्डर पर ₹10 डिलीवरी चार्ज\n`;
+        }
+        
+        message += `🙏 धन्यवाद!`;
+        
+        try {
+            // Send to Telegram
+            await sendToTelegram(message);
+            
+            // Send to WhatsApp
+            sendToWhatsApp(message);
+            
+            // Generate random order ID
+            const randomOrderId = `BKSR-${Date.now().toString().slice(-6)}`;
+            orderId.textContent = randomOrderId;
+            
+            // Play success sound
+            playSound('success');
+            
+            // Hide order form
+            hideOrderForm();
+            hideCartPreview();
+            
+            // Clear cart
+            cart = {};
+            saveCart();
+            updateCartDisplay();
+            
+            // Show success modal after delay
+            setTimeout(() => {
+                successModal.classList.add('active');
+            }, 500);
+            
+        } catch (error) {
+            console.error("Order submission error:", error);
+            showToast("❌ ऑर्डर भेजने में त्रुटि, कृपया फिर से कोशिश करें");
+            submitOrderBtn.disabled = false;
+            submitOrderBtn.innerHTML = `
+                <i class="fas fa-check-circle"></i>
+                ऑर्डर सबमिट करें
+            `;
+        }
+    }
+
+    // Send to Telegram
+    async function sendToTelegram(message) {
+        try {
+            const response = await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    chat_id: TELEGRAM_CHAT_ID,
+                    text: message,
+                    parse_mode: 'Markdown'
+                })
+            });
+            
+            const data = await response.json();
+            console.log("Telegram response:", data);
+            return data;
+        } catch (error) {
+            console.error("Telegram error:", error);
+            throw error;
+        }
+    }
+
+    // Send to WhatsApp
+    function sendToWhatsApp(message) {
+        const encodedMessage = encodeURIComponent(message);
+        const whatsappURL = `https://wa.me/${WHATSAPP_PHONE}?text=${encodedMessage}`;
+        
+        // Open in new tab
+        setTimeout(() => {
+            window.open(whatsappURL, '_blank');
+        }, 1000);
+    }
+
+    function hideSuccessModal() {
+        successModal.classList.remove('active');
+        // Refresh page to show empty cart
+        location.reload();
+    }
+
+    // Toast notification
+    function showToast(message) {
+        toastMessage.textContent = message;
+        toast.classList.add('show');
+        
+        setTimeout(() => {
+            toast.classList.remove('show');
+        }, 3000);
+    }
+
+    // Sound effects
+    function playSound(type) {
+        // Simple sound simulation
+        try {
+            if (type === 'add') {
+                // Add sound
+                const audio = new Audio('data:audio/wav;base64,UklGRigAAABXQVZFZm10IBIAAAABAAEARKwAAIhYAQACABAAZGF0YQQ=');
+                audio.volume = 0.3;
+                audio.play();
+            } else if (type === 'remove') {
+                // Remove sound
+                const audio = new Audio('data:audio/wav;base64,UklGRigAAABXQVZFZm10IBIAAAABAAEARKwAAIhYAQACABAAZGF0YQQ=');
+                audio.volume = 0.2;
+                audio.play();
+            } else if (type === 'success') {
+                // Success sound
+                const audio = new Audio('data:audio/wav;base64,UklGRigAAABXQVZFZm10IBIAAAABAAEARKwAAIhYAQACABAAZGF0YQQ=');
+                audio.volume = 0.4;
+                audio.play();
+            }
+        } catch (e) {
+            console.log("Audio not supported");
+        }
+    }
+
+    // Initialize app
+    document.addEventListener('DOMContentLoaded', initApp);
+    
+    // Handle Enter key in search
+    searchInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            filterProducts();
+        }
+    });
 </script>
-
-<header>🛒 Banda Ki Seva – Ration Order</header>
-
-<div class="categories">
- <div class="cat-btn active" onclick="filterCat('all')">सभी</div>
- <div class="cat-btn" onclick="filterCat('दाल')">दाल</div>
- <div class="cat-btn" onclick="filterCat('चावल')">चावल</div>
- <div class="cat-btn" onclick="filterCat('आटा')">आटा</div>
- <div class="cat-btn" onclick="filterCat('मसाला')">मसाले</div>
- <div class="cat-btn" onclick="filterCat('तेल')">तेल</div>
- <div class="cat-btn" onclick="filterCat('नमकीन')">नमकीन</div>
-</div>
-
-<div class="items">
-
-<!-- ===== दाल ===== -->
-<div class="item" data-cat="दाल">
-<h4>चना दाल</h4>
-<div class="qty">
-<button onclick="addItem('दाल','चना दाल','Kg')">+</button>
-<span id="चना दाल">0 Kg</span>
-<button onclick="removeItem('चना दाल','Kg')">−</button>
-</div></div>
-
-<div class="item" data-cat="दाल">
-<h4>अरहर दाल</h4>
-<div class="qty">
-<button onclick="addItem('दाल','अरहर दाल','Kg')">+</button>
-<span id="अरहर दाल">0 Kg</span>
-<button onclick="removeItem('अरहर दाल','Kg')">−</button>
-</div></div>
-
-<!-- ===== चावल ===== -->
-<div class="item" data-cat="चावल">
-<h4>बासमती चावल</h4>
-<div class="qty">
-<button onclick="addItem('चावल','बासमती चावल','Kg')">+</button>
-<span id="बासमती चावल">0 Kg</span>
-<button onclick="removeItem('बासमती चावल','Kg')">−</button>
-</div></div>
-
-<div class="item" data-cat="चावल">
-<h4>साधारण चावल</h4>
-<div class="qty">
-<button onclick="addItem('चावल','साधारण चावल','Kg')">+</button>
-<span id="साधारण चावल">0 Kg</span>
-<button onclick="removeItem('साधारण चावल','Kg')">−</button>
-</div></div>
-
-<!-- ===== आटा ===== -->
-<div class="item" data-cat="आटा">
-<h4>गेहूं आटा</h4>
-<div class="qty">
-<button onclick="addItem('आटा','गेहूं आटा','Kg')">+</button>
-<span id="गेहूं आटा">0 Kg</span>
-<button onclick="removeItem('गेहूं आटा','Kg')">−</button>
-</div></div>
-
-<!-- ===== मसाले ===== -->
-<div class="item" data-cat="मसाला">
-<h4>हल्दी</h4>
-<div class="qty">
-<button onclick="addItem('मसाला','हल्दी','Gram')">+</button>
-<span id="हल्दी">0 Gram</span>
-<button onclick="removeItem('हल्दी','Gram')">−</button>
-</div></div>
-
-<div class="item" data-cat="मसाला">
-<h4>धनिया</h4>
-<div class="qty">
-<button onclick="addItem('मसाला','धनिया','Gram')">+</button>
-<span id="धनिया">0 Gram</span>
-<button onclick="removeItem('धनिया','Gram')">−</button>
-</div></div>
-
-<!-- ===== तेल ===== -->
-<div class="item" data-cat="तेल">
-<h4>सरसों तेल</h4>
-<div class="qty">
-<button onclick="addItem('तेल','सरसों तेल','लीटर')">+</button>
-<span id="सरसों तेल">0 लीटर</span>
-<button onclick="removeItem('सरसों तेल','लीटर')">−</button>
-</div></div>
-
-<!-- ===== नमकीन ===== -->
-<div class="item" data-cat="नमकीन">
-<h4>मिक्स नमकीन</h4>
-<div class="qty">
-<button onclick="addItem('नमकीन','मिक्स नमकीन','पैकेट')">+</button>
-<span id="मिक्स नमकीन">0 पैकेट</span>
-<button onclick="removeItem('मिक्स नमकीन','पैकेट')">−</button>
-</div></div>
-
-</div>
-
-<div class="cart">
-<b>🛒 Cart</b>
-<div id="cartData">कोई आइटम नहीं</div>
-<button onclick="sendWhatsApp()">WhatsApp Order भेजें</button>
-</div>
-
-<script>
-let cart = {};
-
-function addItem(cat,name,unit){
- if(!cart[cat]) cart[cat]={};
- if(!cart[cat][name]) cart[cat][name]={q:0,u:unit};
- cart[cat][name].q++;
- document.getElementById(name).innerText =
-   cart[cat][name].q+" "+unit;
- updateCart();
-}
-
-function removeItem(name,unit){
- for(let cat in cart){
-  if(cart[cat][name]){
-   cart[cat][name].q--;
-   document.getElementById(name).innerText =
-     Math.max(cart[cat][name].q,0)+" "+unit;
-   if(cart[cat][name].q<=0){
-    delete cart[cat][name];
-   }
-  }
- }
- updateCart();
-}
-
-function removeFullItem(cat,item){
- delete cart[cat][item];
- document.getElementById(item).innerText="0";
- if(Object.keys(cart[cat]).length===0){
-  delete cart[cat];
- }
- updateCart();
-}
-
-function updateCart(){
- let h="";
- for(let c in cart){
-  h+="<b>"+c+"</b><br>";
-  for(let i in cart[c]){
-   h+= `${i} : ${cart[c][i].q} ${cart[c][i].u}
-   <button class="removeBtn"
-   onclick="removeFullItem('${c}','${i}')">❌</button><br>`;
-  }
- }
- document.getElementById("cartData").innerHTML =
-   h || "कोई आइटम नहीं";
-}
-
-function sendWhatsApp(){
- let m="🛒 *Ration Order*\n\n";
- for(let c in cart){
-  m+="📌 "+c+"\n";
-  for(let i in cart[c]){
-   m+=`- ${i} : ${cart[c][i].q} ${cart[c][i].u}\n`;
-  }
-  m+="\n";
- }
- window.open("https://wa.me/916351598832?text="+encodeURIComponent(m));
-}
-
-function filterCat(cat){
- document.querySelectorAll(".item").forEach(i=>{
-  i.style.display=(cat==="all"||i.dataset.cat===cat)?"block":"none";
- });
- document.querySelectorAll(".cat-btn").forEach(b=>b.classList.remove("active"));
- event.target.classList.add("active");
-}
-</script>
-
 </body>
 </html>
+       
