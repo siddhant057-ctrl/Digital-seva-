@@ -1,0 +1,2951 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Banda Ki Seva | Smart Ration Order</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css" />
+<style>
+    :root {
+        --primary: #0a8f3c;
+        --primary-light: #4caf50;
+        --primary-dark: #07762e;
+        --secondary: #ff9800;
+        --light: #f8f9fa;
+        --dark: #333;
+        --gray: #6c757d;
+        --light-gray: #e9ecef;
+        --danger: #f44336;
+        --warning: #ffc107;
+        --info: #2196f3;
+        --shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        --radius: 15px;
+        --radius-sm: 10px;
+    }
+
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: 'Segoe UI', 'Arial', sans-serif;
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        color: var(--dark);
+        line-height: 1.6;
+        min-height: 100vh;
+        padding-bottom: 80px;
+    }
+
+    /* Language Toggle */
+    .language-toggle {
+        position: fixed;
+        top: 10px;
+        right: 10px;
+        z-index: 2000;
+        display: flex;
+        gap: 5px;
+        background: white;
+        padding: 5px;
+        border-radius: 20px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+
+    .lang-btn {
+        padding: 8px 15px;
+        border: none;
+        border-radius: 15px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
+        font-size: 14px;
+    }
+
+    .lang-btn.active {
+        background: var(--primary);
+        color: white;
+    }
+
+    /* Header */
+    .header {
+        background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+        color: white;
+        padding: 15px 20px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 5px solid var(--secondary);
+    }
+
+    .logo {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .logo-icon {
+        background: white;
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    .logo-icon i {
+        font-size: 28px;
+        color: var(--primary);
+    }
+
+    .logo-text h1 {
+        font-size: 22px;
+        font-weight: 700;
+        text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
+    }
+
+    .logo-text span {
+        font-size: 14px;
+        opacity: 0.9;
+        font-weight: normal;
+    }
+
+    .user-badge {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        background: rgba(255, 255, 255, 0.2);
+        padding: 8px 15px;
+        border-radius: 30px;
+        font-size: 14px;
+    }
+
+    .cart-icon {
+        position: relative;
+        font-size: 24px;
+        cursor: pointer;
+        background: white;
+        width: 45px;
+        height: 45px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--primary);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    }
+
+    .cart-count {
+        position: absolute;
+        top: -5px;
+        right: -5px;
+        background: var(--danger);
+        color: white;
+        font-size: 12px;
+        width: 22px;
+        height: 22px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        border: 2px solid white;
+    }
+
+    /* Daily Offer Popup */
+    .offer-popup {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.8);
+        z-index: 2000;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+    }
+
+    .offer-popup.active {
+        display: flex;
+    }
+
+    .offer-content {
+        background: white;
+        width: 100%;
+        max-width: 500px;
+        border-radius: var(--radius);
+        overflow: hidden;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+        text-align: center;
+        position: relative;
+    }
+
+    .offer-header {
+        background: linear-gradient(135deg, #ff9800, #ff5722);
+        color: white;
+        padding: 20px;
+        position: relative;
+    }
+
+    .offer-close {
+        position: absolute;
+        top: 10px;
+        right: 15px;
+        background: none;
+        border: none;
+        color: white;
+        font-size: 24px;
+        cursor: pointer;
+    }
+
+    .offer-badge {
+        background: #ff5722;
+        color: white;
+        padding: 5px 15px;
+        border-radius: 20px;
+        font-weight: bold;
+        display: inline-block;
+        margin-bottom: 10px;
+    }
+
+    .offer-body {
+        padding: 30px;
+    }
+
+    .offer-item {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        margin-bottom: 20px;
+        padding: 15px;
+        background: #fff8e1;
+        border-radius: var(--radius-sm);
+    }
+
+    .offer-item img {
+        width: 60px;
+        height: 60px;
+        object-fit: cover;
+        border-radius: 10px;
+    }
+
+    .offer-item-info h4 {
+        color: var(--primary-dark);
+        margin-bottom: 5px;
+    }
+
+    .offer-price {
+        color: var(--danger);
+        font-weight: bold;
+        font-size: 18px;
+    }
+
+    .offer-old-price {
+        text-decoration: line-through;
+        color: var(--gray);
+        margin-left: 10px;
+        font-size: 14px;
+    }
+
+    .offer-footer {
+        padding: 20px;
+        background: #f8f9fa;
+    }
+
+    .offer-timer {
+        font-size: 18px;
+        color: var(--danger);
+        font-weight: bold;
+        margin-bottom: 15px;
+    }
+
+    /* Welcome Section */
+    .welcome-section {
+        padding: 20px;
+        text-align: center;
+        background: linear-gradient(135deg, #ffffff 0%, #f0f9ff 100%);
+        border-radius: 0 0 var(--radius) var(--radius);
+        margin-bottom: 20px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .welcome-icon {
+        font-size: 48px;
+        color: var(--primary);
+        margin-bottom: 10px;
+        animation: bounce 2s infinite;
+    }
+
+    @keyframes bounce {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-10px); }
+    }
+
+    .welcome-text h2 {
+        font-size: 24px;
+        color: var(--primary-dark);
+        margin-bottom: 10px;
+    }
+
+    /* Pricing Rules Display */
+    .rules-section {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 15px;
+        margin: 20px;
+        padding: 20px;
+        background: white;
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+    }
+
+    .rule-card {
+        background: #f8f9fa;
+        padding: 15px;
+        border-radius: var(--radius-sm);
+        border-left: 4px solid var(--primary);
+    }
+
+    .rule-card h4 {
+        color: var(--primary-dark);
+        margin-bottom: 8px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .rule-card p {
+        font-size: 14px;
+        color: var(--gray);
+    }
+
+    /* Categories Navigation - Improved */
+    .categories-section {
+        margin: 20px;
+    }
+
+    .categories-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 15px;
+    }
+
+    .categories-title {
+        font-size: 20px;
+        font-weight: bold;
+        color: var(--primary-dark);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .view-all-btn {
+        background: var(--info);
+        color: white;
+        border: none;
+        padding: 8px 15px;
+        border-radius: 20px;
+        font-size: 14px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        transition: background 0.3s;
+    }
+
+    .view-all-btn:hover {
+        background: #0b7dda;
+    }
+
+    .categories-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 15px;
+        margin-bottom: 20px;
+    }
+
+    .category-card {
+        background: white;
+        border-radius: var(--radius-sm);
+        padding: 15px;
+        text-align: center;
+        box-shadow: var(--shadow);
+        cursor: pointer;
+        transition: transform 0.3s, box-shadow 0.3s;
+        border: 2px solid transparent;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .category-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+        border-color: var(--primary-light);
+    }
+
+    .category-card.active {
+        border-color: var(--primary);
+        background: linear-gradient(135deg, #e8f5e9, #c8e6c9);
+    }
+
+    .category-icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background: var(--light-gray);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+    }
+
+    .category-card.active .category-icon {
+        background: var(--primary);
+        color: white;
+    }
+
+    .category-name {
+        font-weight: 600;
+        color: var(--dark);
+    }
+
+    .category-count {
+        font-size: 12px;
+        color: var(--gray);
+        background: var(--light-gray);
+        padding: 2px 8px;
+        border-radius: 10px;
+    }
+
+    /* Items Grid - Improved */
+    .items-section {
+        margin: 20px;
+    }
+
+    .items-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        background: white;
+        padding: 15px 20px;
+        border-radius: var(--radius-sm);
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    }
+
+    .items-title {
+        font-size: 22px;
+        color: var(--primary-dark);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .search-box {
+        position: relative;
+        width: 300px;
+    }
+
+    .search-box input {
+        width: 100%;
+        padding: 12px 20px 12px 45px;
+        border-radius: 30px;
+        border: 2px solid #ddd;
+        font-size: 16px;
+        background: white;
+        transition: border-color 0.3s;
+    }
+
+    .search-box input:focus {
+        outline: none;
+        border-color: var(--primary);
+    }
+
+    .search-box i {
+        position: absolute;
+        left: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--gray);
+    }
+
+    .items-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 20px;
+        margin-top: 20px;
+    }
+
+    .item-card {
+        background: white;
+        border-radius: var(--radius);
+        overflow: hidden;
+        box-shadow: var(--shadow);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        border: 2px solid transparent;
+        position: relative;
+    }
+
+    .item-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+        border-color: var(--primary-light);
+    }
+
+    .item-image {
+        width: 100%;
+        height: 150px;
+        background: #f0f0f0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 48px;
+        color: var(--primary);
+        position: relative;
+    }
+
+    .item-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .upload-image-btn {
+        position: absolute;
+        bottom: 10px;
+        right: 10px;
+        background: rgba(0, 0, 0, 0.7);
+        color: white;
+        border: none;
+        border-radius: 50%;
+        width: 36px;
+        height: 36px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        font-size: 16px;
+    }
+
+    .price-badge {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        background: var(--secondary);
+        color: white;
+        padding: 5px 10px;
+        border-radius: 20px;
+        font-size: 14px;
+        font-weight: bold;
+        z-index: 2;
+    }
+
+    .min-qty-badge {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background: var(--info);
+        color: white;
+        padding: 5px 10px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: bold;
+        z-index: 2;
+    }
+
+    .item-body {
+        padding: 15px;
+    }
+
+    .item-name {
+        font-size: 18px;
+        font-weight: 700;
+        margin-bottom: 8px;
+        color: var(--dark);
+        height: 50px;
+        overflow: hidden;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+    }
+
+    .item-description {
+        font-size: 14px;
+        color: var(--gray);
+        margin-bottom: 10px;
+        height: 40px;
+        overflow: hidden;
+    }
+
+    .item-price {
+        color: var(--primary);
+        font-size: 22px;
+        font-weight: 700;
+        margin-bottom: 10px;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .item-price span {
+        font-size: 14px;
+        color: var(--gray);
+        font-weight: normal;
+    }
+
+    .item-controls {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-top: 15px;
+    }
+
+    .qty-controls {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        background: #f5f5f5;
+        padding: 6px 12px;
+        border-radius: 20px;
+    }
+
+    .qty-btn {
+        width: 32px;
+        height: 32px;
+        border: none;
+        background: var(--primary);
+        color: white;
+        font-size: 16px;
+        border-radius: 50%;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: background 0.3s;
+    }
+
+    .qty-btn:hover {
+        background: var(--primary-dark);
+    }
+
+    .qty-display {
+        font-size: 16px;
+        font-weight: 700;
+        min-width: 30px;
+        text-align: center;
+        color: var(--dark);
+    }
+
+    .add-to-cart {
+        background: var(--secondary);
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 20px;
+        font-weight: 600;
+        font-size: 14px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        transition: all 0.3s;
+        box-shadow: 0 4px 8px rgba(255, 152, 0, 0.3);
+    }
+
+    .add-to-cart:hover {
+        background: #e68900;
+        transform: scale(1.05);
+    }
+
+    /* Fixed Order Button */
+    .fixed-order-btn {
+        position: fixed;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+        color: white;
+        padding: 18px 40px;
+        border-radius: 50px;
+        font-size: 20px;
+        font-weight: 700;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        box-shadow: 0 6px 20px rgba(10, 143, 60, 0.4);
+        z-index: 1000;
+        transition: all 0.3s;
+        border: none;
+        animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+        0% { box-shadow: 0 6px 20px rgba(10, 143, 60, 0.4); }
+        50% { box-shadow: 0 6px 30px rgba(10, 143, 60, 0.6); }
+        100% { box-shadow: 0 6px 20px rgba(10, 143, 60, 0.4); }
+    }
+
+    .fixed-order-btn:hover {
+        transform: translateX(-50%) scale(1.05);
+        background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+    }
+
+    .fixed-order-btn:disabled {
+        background: #ccc;
+        cursor: not-allowed;
+        animation: none;
+    }
+
+    /* Cart Preview Modal */
+    .cart-preview-modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 1100;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+    }
+
+    .cart-preview-modal.active {
+        display: flex;
+    }
+
+    .cart-preview-content {
+        background: white;
+        width: 100%;
+        max-width: 500px;
+        border-radius: var(--radius);
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        max-height: 80vh;
+        overflow-y: auto;
+    }
+
+    .cart-preview-header {
+        background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+        color: white;
+        padding: 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .cart-preview-header h3 {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 22px;
+    }
+
+    .cart-preview-body {
+        padding: 25px;
+    }
+
+    .cart-items-list {
+        max-height: 300px;
+        overflow-y: auto;
+        margin-bottom: 20px;
+        border-bottom: 2px solid #eee;
+        padding-bottom: 20px;
+    }
+
+    .cart-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 15px 0;
+        border-bottom: 1px solid #f0f0f0;
+    }
+
+    .cart-item:last-child {
+        border-bottom: none;
+    }
+
+    .cart-item-info h4 {
+        font-size: 16px;
+        margin-bottom: 5px;
+    }
+
+    .cart-item-info .category {
+        font-size: 14px;
+        color: var(--gray);
+    }
+
+    .cart-item-controls {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .cart-item-qty {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .cart-item-qty-btn {
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        border: none;
+        background: var(--light-gray);
+        color: var(--dark);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+    }
+
+    .cart-item-qty-btn:hover {
+        background: #ddd;
+    }
+
+    .cart-item-price {
+        font-weight: 700;
+        color: var(--primary);
+        min-width: 80px;
+        text-align: right;
+        font-size: 16px;
+    }
+
+    .cart-summary {
+        margin-top: 20px;
+    }
+
+    .summary-row {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 12px;
+        font-size: 16px;
+    }
+
+    .delivery-info-row {
+        color: var(--info);
+        font-weight: 600;
+    }
+
+    .total {
+        font-size: 22px;
+        font-weight: 700;
+        color: var(--primary);
+        margin-top: 15px;
+        padding-top: 15px;
+        border-top: 2px dashed #ddd;
+    }
+
+    .cart-preview-footer {
+        padding: 20px 25px;
+        background: #f8f9fa;
+        display: flex;
+        justify-content: space-between;
+        gap: 15px;
+    }
+
+    .btn {
+        padding: 14px 30px;
+        border-radius: 10px;
+        border: none;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.3s;
+        font-size: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        flex: 1;
+    }
+
+    .btn-secondary {
+        background: var(--light-gray);
+        color: var(--dark);
+    }
+
+    .btn-secondary:hover {
+        background: #ddd;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+        color: white;
+        box-shadow: 0 4px 8px rgba(10, 143, 60, 0.3);
+    }
+
+    .btn-secondary:hover {
+        background: #ddd;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+        color: white;
+        box-shadow: 0 4px 8px rgba(10, 143, 60, 0.3);
+    }
+
+    .btn-primary:hover {
+        background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+        transform: translateY(-2px);
+    }
+
+    /* Order Form Modal */
+    .order-form-modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 1200;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+    }
+
+    .order-form-modal.active {
+        display: flex;
+    }
+
+    .order-form-content {
+        background: white;
+        width: 100%;
+        max-width: 600px;
+        border-radius: var(--radius);
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        max-height: 90vh;
+        overflow-y: auto;
+    }
+
+    .order-form-header {
+        background: linear-gradient(135deg, var(--secondary), #e68900);
+        color: white;
+        padding: 20px;
+        text-align: center;
+    }
+
+    .order-form-header h3 {
+        font-size: 24px;
+        margin-bottom: 5px;
+    }
+
+    .order-form-body {
+        padding: 25px;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 600;
+        color: var(--dark);
+        font-size: 16px;
+    }
+
+    .form-group input, .form-group textarea, .form-group select {
+        width: 100%;
+        padding: 15px;
+        border-radius: 10px;
+        border: 2px solid #ddd;
+        font-size: 16px;
+        font-family: inherit;
+        transition: border-color 0.3s;
+    }
+
+    .form-group input:focus, .form-group textarea:focus, .form-group select:focus {
+        outline: none;
+        border-color: var(--primary);
+    }
+
+    .location-section {
+        border: 2px dashed #ddd;
+        padding: 15px;
+        border-radius: 10px;
+        margin-bottom: 20px;
+    }
+
+    .location-btn {
+        background: var(--info);
+        color: white;
+        border: none;
+        padding: 12px 20px;
+        border-radius: 10px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-weight: 600;
+        width: 100%;
+        justify-content: center;
+        margin-top: 10px;
+        transition: background 0.3s;
+    }
+
+    .location-btn:hover {
+        background: #0b7dda;
+    }
+
+    .location-display {
+        background: #f8f9fa;
+        padding: 12px;
+        border-radius: 8px;
+        margin-top: 15px;
+        font-size: 14px;
+        display: none;
+    }
+
+    .location-display.active {
+        display: block;
+    }
+
+    .image-upload-section {
+        border: 2px dashed #ddd;
+        padding: 20px;
+        border-radius: 10px;
+        text-align: center;
+        margin-bottom: 20px;
+        cursor: pointer;
+    }
+
+    .image-upload-section:hover {
+        border-color: var(--primary);
+    }
+
+    .image-upload-section input {
+        display: none;
+    }
+
+    .upload-preview {
+        margin-top: 15px;
+        display: none;
+    }
+
+    .upload-preview img {
+        max-width: 100%;
+        max-height: 200px;
+        border-radius: 10px;
+    }
+
+    .order-summary-box {
+        background: #f8f9fa;
+        border-radius: 10px;
+        padding: 20px;
+        margin-top: 20px;
+        border: 2px solid #eaeaea;
+    }
+
+    .order-summary-box h4 {
+        margin-bottom: 15px;
+        color: var(--primary-dark);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 18px;
+    }
+
+    .order-form-footer {
+        padding: 25px;
+        background: #f8f9fa;
+        display: flex;
+        justify-content: center;
+    }
+
+    .submit-order-btn {
+        background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+        color: white;
+        border: none;
+        padding: 18px 50px;
+        border-radius: 15px;
+        font-size: 20px;
+        font-weight: 700;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        transition: all 0.3s;
+        box-shadow: 0 6px 20px rgba(10, 143, 60, 0.4);
+        width: 100%;
+        justify-content: center;
+    }
+
+    .submit-order-btn:hover {
+        background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(10, 143, 60, 0.5);
+    }
+
+    .submit-order-btn:disabled {
+        background: #ccc;
+        cursor: not-allowed;
+        transform: none;
+        box-shadow: none;
+    }
+
+    /* Success Modal */
+    .success-modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.7);
+        z-index: 1400;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+    }
+
+    .success-modal.active {
+        display: flex;
+    }
+
+    .success-content {
+        background: white;
+        width: 100%;
+        max-width: 500px;
+        border-radius: var(--radius);
+        overflow: hidden;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+        text-align: center;
+        padding: 40px;
+    }
+
+    .success-icon {
+        font-size: 80px;
+        color: var(--primary);
+        margin-bottom: 20px;
+        animation: successAnimation 1s;
+    }
+
+    @keyframes successAnimation {
+        0% { transform: scale(0); }
+        70% { transform: scale(1.2); }
+        100% { transform: scale(1); }
+    }
+
+    .success-content h2 {
+        font-size: 28px;
+        color: var(--primary-dark);
+        margin-bottom: 15px;
+    }
+
+    .success-content p {
+        color: var(--gray);
+        margin-bottom: 25px;
+        font-size: 17px;
+    }
+
+    .success-btn {
+        background: var(--primary);
+        color: white;
+        border: none;
+        padding: 15px 30px;
+        border-radius: 10px;
+        font-size: 18px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: background 0.3s;
+        margin-top: 20px;
+        width: 100%;
+    }
+
+    .success-btn:hover {
+        background: var(--primary-dark);
+    }
+
+    /* Toast Notification */
+    .toast {
+        position: fixed;
+        bottom: 30px;
+        right: 30px;
+        background: var(--primary);
+        color: white;
+        padding: 18px 25px;
+        border-radius: 10px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        z-index: 1300;
+        transform: translateX(100px);
+        opacity: 0;
+        transition: transform 0.4s, opacity 0.4s;
+        max-width: 350px;
+    }
+
+    .toast.show {
+        transform: translateX(0);
+        opacity: 1;
+    }
+
+    .toast i {
+        font-size: 24px;
+    }
+
+    .toast-message {
+        font-size: 16px;
+        font-weight: 600;
+    }
+
+    /* Empty State */
+    .empty-state {
+        text-align: center;
+        padding: 50px 20px;
+        color: var(--gray);
+        background: white;
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        margin-top: 20px;
+    }
+
+    .empty-state i {
+        font-size: 60px;
+        margin-bottom: 20px;
+        opacity: 0.5;
+        color: var(--primary-light);
+    }
+
+    .empty-state h3 {
+        font-size: 22px;
+        margin-bottom: 10px;
+        color: var(--dark);
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .header {
+            flex-direction: column;
+            gap: 15px;
+            padding: 15px;
+        }
+        
+        .user-badge {
+            order: 1;
+            width: 100%;
+            justify-content: center;
+            margin-top: 10px;
+        }
+        
+        .logo {
+            width: 100%;
+            justify-content: center;
+        }
+        
+        .rules-section {
+            grid-template-columns: 1fr;
+        }
+        
+        .categories-container {
+            grid-template-columns: repeat(2, 1fr);
+        }
+        
+        .search-box {
+            width: 100%;
+            margin-top: 15px;
+        }
+        
+        .items-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 15px;
+        }
+        
+        .items-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .fixed-order-btn {
+            width: 90%;
+            justify-content: center;
+            padding: 15px 20px;
+            font-size: 18px;
+        }
+        
+        .btn {
+            padding: 12px 20px;
+            font-size: 15px;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .welcome-text h2 {
+            font-size: 20px;
+        }
+        
+        .items-title {
+            font-size: 20px;
+        }
+        
+        .item-name {
+            font-size: 16px;
+        }
+        
+        .item-price {
+            font-size: 20px;
+        }
+        
+        .cart-preview-footer, .order-form-footer {
+            flex-direction: column;
+        }
+        
+        .toast {
+            left: 20px;
+            right: 20px;
+            bottom: 20px;
+            max-width: none;
+        }
+        
+        .language-toggle {
+            top: 5px;
+            right: 5px;
+        }
+        
+        .lang-btn {
+            padding: 6px 12px;
+            font-size: 12px;
+        }
+    }
+</style>
+</head>
+<body>
+
+<!-- Language Toggle -->
+<div class="language-toggle">
+    <button class="lang-btn active" onclick="changeLanguage('hi')">हिंदी</button>
+    <button class="lang-btn" onclick="changeLanguage('en')">English</button>
+</div>
+
+<!-- Daily Offer Popup -->
+<div class="offer-popup" id="offerPopup">
+    <div class="offer-content">
+        <div class="offer-header">
+            <button class="offer-close" onclick="closeOfferPopup()">
+                <i class="fas fa-times"></i>
+            </button>
+            <div class="offer-badge">🎁 आज का ऑफर 🎁</div>
+            <h2>आज खरीदें, कल बचाएं!</h2>
+            <p>सिर्फ आज के लिए विशेष छूट</p>
+        </div>
+        <div class="offer-body">
+            <div class="offer-item">
+                <div class="category-icon" style="background:#ffcc80; color:#e65100;">
+                    <i class="fas fa-seedling"></i>
+                </div>
+                <div class="offer-item-info">
+                    <h4>अरहर दाल</h4>
+                    <div class="offer-price">₹110 <span class="offer-old-price">₹120</span></div>
+                    <p>1 किलो पैक, 10 रुपये की बचत</p>
+                </div>
+            </div>
+            <div class="offer-item">
+                <div class="category-icon" style="background:#c8e6c9; color:#388e3c;">
+                    <i class="fas fa-rice"></i>
+                </div>
+                <div class="offer-item-info">
+                    <h4>बासमती चावल</h4>
+                    <div class="offer-price">₹90 <span class="offer-old-price">₹100</span></div>
+                    <p>1 किलो पैक, 10 रुपये की बचत</p>
+                </div>
+            </div>
+            <div class="offer-item">
+                <div class="category-icon" style="background:#ffcdd2; color:#d32f2f;">
+                    <i class="fas fa-mortar-pestle"></i>
+                </div>
+                <div class="offer-item-info">
+                    <h4>मसाला कॉम्बो</h4>
+                    <div class="offer-price">₹50 <span class="offer-old-price">₹65</span></div>
+                    <p>3 मसाले, 15 रुपये की बचत</p>
+                </div>
+            </div>
+        </div>
+        <div class="offer-footer">
+            <div class="offer-timer" id="offerTimer">⏰ ऑफर समाप्त होने में: 23:59:59</div>
+            <button class="btn btn-primary" onclick="closeOfferPopup()">
+                <i class="fas fa-shopping-cart"></i>
+                ऑफर प्रोडक्ट देखें
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Header -->
+<header class="header">
+    <div class="logo">
+        <div class="logo-icon">
+            <i class="fas fa-shopping-basket"></i>
+        </div>
+        <div class="logo-text">
+            <h1 id="appTitle">Banda Ki Seva</h1>
+            <span id="appSubtitle">स्मार्ट राशन ऑर्डरिंग</span>
+        </div>
+    </div>
+    
+    <div class="user-badge">
+        <i class="fas fa-map-marker-alt"></i>
+        <span id="colonyName">Swaraj Colony</span>
+        <div class="cart-icon" onclick="showCartPreview()">
+            <i class="fas fa-shopping-cart"></i>
+            <div class="cart-count" id="cartCount">0</div>
+        </div>
+    </div>
+</header>
+
+<!-- Welcome Section -->
+<div class="welcome-section">
+    <div class="welcome-icon">
+        <i class="fas fa-hand-holding-heart"></i>
+    </div>
+    <div class="welcome-text">
+        <h2 id="welcomeTitle">🎯 स्मार्ट प्राइसिंग नियम 🎯</h2>
+        <p id="welcomeText">अब ऑर्डर करना और भी स्मार्ट! देखें नए नियम:</p>
+    </div>
+</div>
+
+<!-- Pricing Rules Display -->
+<div class="rules-section">
+    <div class="rule-card">
+        <h4><i class="fas fa-rupee-sign"></i> <span id="rule1Title">डिलीवरी चार्ज</span></h4>
+        <p id="rule1Text">• ₹100 से कम ऑर्डर: ₹20 डिलीवरी चार्ज<br>• ₹100 या अधिक ऑर्डर: ₹10 डिलीवरी चार्ज</p>
+    </div>
+    
+    <div class="rule-card">
+        <h4><i class="fas fa-box"></i> <span id="rule2Title">मिनिमम क्वांटिटी</span></h4>
+        <p id="rule2Text">• ₹1 वस्तु: कम से कम 10 पीस<br>• ₹2 वस्तु: कम से कम 5 पीस<br>• ₹3 वस्तु: कम से कम 3 पीस<br>• ₹4 वस्तु: कम से कम 2 पीस<br>• ₹5 वस्तु: कम से कम 2 पीस<br>• ₹5+ वस्तु: कम से कम 1 पीस</p>
+    </div>
+    
+    <div class="rule-card">
+        <h4><i class="fas fa-user-check"></i> <span id="rule3Title">कस्टमर सुविधा</span></h4>
+        <p id="rule3Text">• फॉर्म एक बार भरें, हमेशा के लिए सेव रहेगा<br>• अगले ऑर्डर में ऑटो-फिल होगा<br>• आसान और तेज़ ऑर्डर प्रक्रिया</p>
+    </div>
+</div>
+
+<!-- Categories Section - Improved -->
+<div class="categories-section">
+    <div class="categories-header">
+        <h2 class="categories-title">
+            <i class="fas fa-tags"></i>
+            <span id="categoriesTitle">श्रेणियाँ</span>
+        </h2>
+        <button class="view-all-btn" onclick="filterByCategory('all')">
+            <i class="fas fa-th-large"></i>
+            <span id="viewAllText">सभी देखें</span>
+        </button>
+    </div>
+    
+    <div class="categories-container" id="categoriesContainer">
+        <!-- Categories will be dynamically added -->
+    </div>
+</div>
+
+<!-- Items Section -->
+<div class="items-section">
+    <div class="items-header">
+        <h2 class="items-title">
+            <i class="fas fa-store"></i>
+            <span id="productsTitle">उत्पाद सूची</span>
+        </h2>
+        <div class="search-box">
+            <i class="fas fa-search"></i>
+            <input type="text" id="searchInput" placeholder="क्या खरीदना चाहते हैं? यहाँ लिखें...">
+        </div>
+    </div>
+    
+    <!-- Items Grid -->
+    <div class="items-grid" id="itemsGrid">
+        <!-- Items will be dynamically added -->
+        <div class="empty-state">
+            <i class="fas fa-search"></i>
+            <h3 id="loadingTitle">उत्पाद लोड हो रहे हैं...</h3>
+            <p id="loadingText">कृपया थोड़ी देर प्रतीक्षा करें</p>
+        </div>
+    </div>
+</div>
+
+<!-- Fixed Order Button -->
+<button class="fixed-order-btn" id="fixedOrderBtn" onclick="showOrderForm()" disabled>
+    <i class="fas fa-paper-plane"></i>
+    <span id="orderButtonText">ऑर्डर सबमिट करें</span>
+    <i class="fas fa-arrow-right"></i>
+</button>
+
+<!-- Cart Preview Modal -->
+<div class="cart-preview-modal" id="cartPreviewModal">
+    <div class="cart-preview-content">
+        <div class="cart-preview-header">
+            <h3><i class="fas fa-shopping-cart"></i> <span id="cartTitle">आपकी टोकरी</span></h3>
+            <i class="fas fa-times close-modal" onclick="hideCartPreview()"></i>
+        </div>
+        
+        <div class="cart-preview-body">
+            <div class="cart-items-list" id="cartItemsList">
+                <!-- Cart items will be dynamically added -->
+                <div class="empty-state" style="padding: 30px;">
+                    <i class="fas fa-shopping-basket"></i>
+                    <h3 id="emptyCartTitle">आपकी टोकरी खाली है</h3>
+                    <p id="emptyCartText">उत्पाद जोड़ने के लिए + बटन पर क्लिक करें</p>
+                </div>
+            </div>
+            
+            <div class="cart-summary">
+                <div class="summary-row">
+                    <span id="totalItemsText">कुल आइटम:</span>
+                    <span id="previewTotalItems">0</span>
+                </div>
+                <div class="summary-row">
+                    <span id="subtotalText">उत्पाद मूल्य:</span>
+                    <span id="previewSubtotal">₹0</span>
+                </div>
+                <div class="summary-row delivery-info-row" id="deliveryInfoRow">
+                    <span id="deliveryText">डिलीवरी शुल्क:</span>
+                    <span id="previewDelivery">₹0</span>
+                </div>
+                <div class="summary-row total">
+                    <span id="totalAmountText">कुल राशि:</span>
+                    <span id="previewTotalAmount">₹0</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="cart-preview-footer">
+            <button class="btn btn-secondary" onclick="hideCartPreview()">
+                <i class="fas fa-shopping"></i>
+                <span id="continueShoppingText">खरीदारी जारी रखें</span>
+            </button>
+            <button class="btn btn-primary" onclick="showOrderForm()">
+                <i class="fas fa-check-circle"></i>
+                <span id="placeOrderText">ऑर्डर देना है</span>
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Order Form Modal -->
+<div class="order-form-modal" id="orderFormModal">
+    <div class="order-form-content">
+        <div class="order-form-header">
+            <h3 id="orderFormTitle">📝 आखिरी स्टेप! 📝</h3>
+            <p id="orderFormSubtitle">अपना विवरण भरें और ऑर्डर सबमिट करें</p>
+        </div>
+        
+        <div class="order-form-body">
+            <div class="form-group">
+                <label for="customerName"><i class="fas fa-user"></i> <span id="nameLabel">आपका नाम *</span></label>
+                <input type="text" id="customerName" placeholder="अपना पूरा नाम लिखें">
+            </div>
+            
+            <div class="form-group">
+                <label for="customerPhone"><i class="fas fa-phone"></i> <span id="phoneLabel">फोन नंबर *</span></label>
+                <input type="tel" id="customerPhone" placeholder="अपना 10-अंकीय मोबाइल नंबर">
+            </div>
+            
+            <div class="form-group">
+                <label for="customerAddress"><i class="fas fa-home"></i> <span id="addressLabel">पूरा पता *</span></label>
+                <textarea id="customerAddress" rows="3" placeholder="मकान नंबर, गली नंबर, कॉलोनी का नाम"></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label for="deliveryTime"><i class="fas fa-clock"></i> <span id="deliveryTimeLabel">डिलीवरी समय</span></label>
+                <select id="deliveryTime">
+                    <option value="10:00-12:00">सुबह 10:00 - 12:00</option>
+                    <option value="12:00-14:00" selected>दोपहर 12:00 - 2:00</option>
+                    <option value="14:00-16:00">दोपहर 2:00 - 4:00</option>
+                    <option value="16:00-18:00">शाम 4:00 - 6:00</option>
+                </select>
+            </div>
+            
+            <!-- Location Section -->
+            <div class="location-section">
+                <label><i class="fas fa-location-dot"></i> <span id="locationLabel">आपका स्थान</span></label>
+                <p id="locationHelp" style="font-size:14px; color:#666; margin-bottom:10px;">अपना स्थान साझा करें ताकि डिलीवरी आसान हो</p>
+                <div id="locationDisplay" class="location-display">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <span id="locationText">स्थान लोड हो रहा है...</span>
+                </div>
+                <button type="button" class="location-btn" onclick="getUserLocation()">
+                    <i class="fas fa-location-arrow"></i>
+                    <span id="locationButtonText">स्थान साझा करें</span>
+                </button>
+            </div>
+            
+            <!-- Image Upload Section -->
+            <div class="image-upload-section" onclick="document.getElementById('imageUpload').click()">
+                <i class="fas fa-camera" style="font-size: 40px; color: #666; margin-bottom: 10px;"></i>
+                <h4 id="imageUploadTitle">छवि जोड़ें (वैकल्पिक)</h4>
+                <p id="imageUploadText">प्रिस्क्रिप्शन या विशेष निर्देशों की फोटो अपलोड करें</p>
+                <input type="file" id="imageUpload" accept="image/*">
+                <div class="upload-preview" id="imagePreview">
+                    <img id="previewImage" src="" alt="Preview">
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="orderNotes"><i class="fas fa-sticky-note"></i> <span id="notesLabel">विशेष निर्देश (अगर कोई हो)</span></label>
+                <textarea id="orderNotes" rows="2" placeholder="उदाहरण: सामने वाले दरवाजे पर डिलीवरी करें"></textarea>
+            </div>
+            
+            <div class="order-summary-box">
+                <h4><i class="fas fa-receipt"></i> <span id="orderSummaryTitle">आपका ऑर्डर सारांश</span></h4>
+                <div id="orderSummaryContent"></div>
+                <div class="summary-row delivery-info-row">
+                    <span id="deliveryChargeText">डिलीवरी शुल्क:</span>
+                    <span id="orderFormDelivery">₹0</span>
+                </div>
+                <div class="summary-row total">
+                    <span id="totalText">कुल राशि:</span>
+                    <span id="orderFormTotal">₹0</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="order-form-footer">
+            <button class="submit-order-btn" onclick="submitOrder()" id="submitOrderBtn">
+                <i class="fas fa-check-circle"></i>
+                <span id="submitOrderText">ऑर्डर सबमिट करें</span>
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Success Modal -->
+<div class="success-modal" id="successModal">
+    <div class="success-content">
+        <div class="success-icon">
+            <i class="fas fa-check-circle"></i>
+        </div>
+        <h2 id="successTitle">🎉 ऑर्डर सफल! 🎉</h2>
+        <p id="successMessage">आपका ऑर्डर सफलतापूर्वक सबमिट हो गया है।</p>
+        <p id="successNote">अब आपका फॉर्म सेव हो गया है, अगली बार ऑटो-फिल होगा!</p>
+        <p><strong id="orderIdText">आपका ऑर्डर आईडी: <span id="orderId">BKSR-12345</span></strong></p>
+        <button class="success-btn" onclick="hideSuccessModal()">
+            <i class="fas fa-home"></i>
+            <span id="continueShoppingBtnText">वापस शॉपिंग करें</span>
+        </button>
+    </div>
+</div>
+
+<!-- Toast Notification -->
+<div class="toast" id="toast">
+    <i class="fas fa-check-circle"></i>
+    <div class="toast-message" id="toastMessage">आइटम टोकरी में जोड़ा गया</div>
+</div>
+
+<!-- Leaflet Map JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
+<script>
+    // Telegram Bot Configuration
+    const TELEGRAM_BOT_TOKEN = "7729928604:AAEINikbhwHTMSK1pgV3nROUfSGEVb-z2r4";
+    const TELEGRAM_CHAT_ID = "6798434092";
+    const WHATSAPP_PHONE = "916351598832";
+    
+    // Language Strings
+    const strings = {
+        hi: {
+            // App
+            appTitle: "Banda Ki Seva",
+            appSubtitle: "स्मार्ट राशन ऑर्डरिंग",
+            
+            // Welcome
+            welcomeTitle: "🎯 स्मार्ट प्राइसिंग नियम 🎯",
+            welcomeText: "अब ऑर्डर करना और भी स्मार्ट! देखें नए नियम:",
+            
+            // Rules
+            rule1Title: "डिलीवरी चार्ज",
+            rule1Text: "• ₹100 से कम ऑर्डर: ₹20 डिलीवरी चार्ज<br>• ₹100 या अधिक ऑर्डर: ₹10 डिलीवरी चार्ज",
+            rule2Title: "मिनिमम क्वांटिटी",
+            rule2Text: "• ₹1 वस्तु: कम से कम 10 पीस<br>• ₹2 वस्तु: कम से कम 5 पीस<br>• ₹3 वस्तु: कम से कम 3 पीस<br>• ₹4 वस्तु: कम से कम 2 पीस<br>• ₹5 वस्तु: कम से कम 2 पीस<br>• ₹5+ वस्तु: कम से कम 1 पीस",
+            rule3Title: "कस्टमर सुविधा",
+            rule3Text: "• फॉर्म एक बार भरें, हमेशा के लिए सेव रहेगा<br>• अगले ऑर्डर में ऑटो-फिल होगा<br>• आसान और तेज़ ऑर्डर प्रक्रिया",
+            
+            // Categories
+            categoriesTitle: "श्रेणियाँ",
+            viewAllText: "सभी देखें",
+            
+            // Products
+            productsTitle: "उत्पाद सूची",
+            loadingTitle: "उत्पाद लोड हो रहे हैं...",
+            loadingText: "कृपया थोड़ी देर प्रतीक्षा करें",
+            
+            // Cart
+            cartTitle: "आपकी टोकरी",
+            emptyCartTitle: "आपकी टोकरी खाली है",
+            emptyCartText: "उत्पाद जोड़ने के लिए + बटन पर क्लिक करें",
+            totalItemsText: "कुल आइटम:",
+            subtotalText: "उत्पाद मूल्य:",
+            deliveryText: "डिलीवरी शुल्क:",
+            totalAmountText: "कुल राशि:",
+            continueShoppingText: "खरीदारी जारी रखें",
+            placeOrderText: "ऑर्डर देना है",
+            
+            // Order Form
+            orderFormTitle: "📝 आखिरी स्टेप! 📝",
+            orderFormSubtitle: "अपना विवरण भरें और ऑर्डर सबमिट करें",
+            nameLabel: "आपका नाम *",
+            phoneLabel: "फोन नंबर *",
+            addressLabel: "पूरा पता *",
+            deliveryTimeLabel: "डिलीवरी समय",
+            locationLabel: "आपका स्थान",
+            locationHelp: "अपना स्थान साझा करें ताकि डिलीवरी आसान हो",
+            locationButtonText: "स्थान साझा करें",
+            imageUploadTitle: "छवि जोड़ें (वैकल्पिक)",
+            imageUploadText: "प्रिस्क्रिप्शन या विशेष निर्देशों की फोटो अपलोड करें",
+            notesLabel: "विशेष निर्देश (अगर कोई हो)",
+            orderSummaryTitle: "आपका ऑर्डर सारांश",
+            deliveryChargeText: "डिलीवरी शुल्क:",
+            totalText: "कुल राशि:",
+            submitOrderText: "ऑर्डर सबमिट करें",
+            
+            // Success
+            successTitle: "🎉 ऑर्डर सफल! 🎉",
+            successMessage: "आपका ऑर्डर सफलतापूर्वक सबमिट हो गया है।",
+            successNote: "अब आपका फॉर्म सेव हो गया है, अगली बार ऑटो-फिल होगा!",
+            orderIdText: "आपका ऑर्डर आईडी:",
+            continueShoppingBtnText: "वापस शॉपिंग करें",
+            
+            // Button
+            orderButtonText: "ऑर्डर सबमिट करें"
+        },
+        en: {
+            // App
+            appTitle: "Banda Ki Seva",
+            appSubtitle: "Smart Ration Ordering",
+            
+            // Welcome
+            welcomeTitle: "🎯 Smart Pricing Rules 🎯",
+            welcomeText: "Ordering is now smarter! See new rules:",
+            
+            // Rules
+            rule1Title: "Delivery Charge",
+            rule1Text: "• Orders below ₹100: ₹20 delivery charge<br>• Orders ₹100 or above: ₹10 delivery charge",
+            rule2Title: "Minimum Quantity",
+            rule2Text: "• ₹1 item: minimum 10 pieces<br>• ₹2 item: minimum 5 pieces<br>• ₹3 item: minimum 3 pieces<br>• ₹4 item: minimum 2 pieces<br>• ₹5 item: minimum 2 pieces<br>• ₹5+ item: minimum 1 piece",
+            rule3Title: "Customer Convenience",
+            rule3Text: "• Fill form once, saved permanently<br>• Auto-fill on next order<br>• Easy and fast ordering process",
+            
+            // Categories
+            categoriesTitle: "Categories",
+            viewAllText: "View All",
+            
+            // Products
+            productsTitle: "Product List",
+            loadingTitle: "Products Loading...",
+            loadingText: "Please wait a moment",
+            
+            // Cart
+            cartTitle: "Your Cart",
+            emptyCartTitle: "Your cart is empty",
+            emptyCartText: "Click + button to add products",
+            totalItemsText: "Total Items:",
+            subtotalText: "Product Value:",
+            deliveryText: "Delivery Charge:",
+            totalAmountText: "Total Amount:",
+            continueShoppingText: "Continue Shopping",
+            placeOrderText: "Place Order",
+            
+            // Order Form
+            orderFormTitle: "📝 Final Step! 📝",
+            orderFormSubtitle: "Fill your details and submit order",
+            nameLabel: "Your Name *",
+            phoneLabel: "Phone Number *",
+            addressLabel: "Full Address *",
+            deliveryTimeLabel: "Delivery Time",
+            locationLabel: "Your Location",
+            locationHelp: "Share your location for easier delivery",
+            locationButtonText: "Share Location",
+            imageUploadTitle: "Add Image (Optional)",
+            imageUploadText: "Upload photo of prescription or special instructions",
+            notesLabel: "Special Instructions (if any)",
+            orderSummaryTitle: "Your Order Summary",
+            deliveryChargeText: "Delivery Charge:",
+            totalText: "Total Amount:",
+            submitOrderText: "Submit Order",
+            
+            // Success
+            successTitle: "🎉 Order Successful! 🎉",
+            successMessage: "Your order has been submitted successfully.",
+            successNote: "Your form is now saved, will auto-fill next time!",
+            orderIdText: "Your Order ID:",
+            continueShoppingBtnText: "Back to Shopping",
+            
+            // Button
+            orderButtonText: "Submit Order"
+        }
+    };
+
+    // Minimum quantity rules
+    const MIN_QUANTITY_RULES = {
+        1: 10,   // ₹1 items: min 10 pieces
+        2: 5,    // ₹2 items: min 5 pieces
+        3: 3,    // ₹3 items: min 3 pieces
+        4: 2,    // ₹4 items: min 2 pieces
+        5: 2     // ₹5 items: min 2 pieces
+    };
+
+    // Product Database with Images
+    const products = [
+        { id: 1, category: "दाल", name: "चना दाल", name_en: "Chana Dal", unit: "किलो", unit_en: "Kg", price: 90, minQty: 1, icon: "🌱", emoji: "🟡", description: "उच्च प्रोटीन, स्वस्थ", description_en: "High protein, healthy" },
+        { id: 2, category: "दाल", name: "अरहर दाल", name_en: "Arhar Dal", unit: "किलो", unit_en: "Kg", price: 120, minQty: 1, icon: "🌱", emoji: "🟠", description: "स्वादिष्ट, पौष्टिक", description_en: "Tasty, nutritious" },
+        { id: 3, category: "दाल", name: "मूंग दाल", name_en: "Moong Dal", unit: "किलो", unit_en: "Kg", price: 110, minQty: 1, icon: "🌱", emoji: "🟢", description: "हल्की और आसानी से पचने वाली", description_en: "Light and easily digestible" },
+        { id: 4, category: "दाल", name: "उड़द दाल", name_en: "Urad Dal", unit: "किलो", unit_en: "Kg", price: 130, minQty: 1, icon: "🌱", emoji: "⚫", description: "रेशेदार, स्वास्थ्यवर्धक", description_en: "Fibrous, healthy" },
+        { id: 5, category: "चावल", name: "सस्ता चावल", name_en: "Economy Rice", unit: "किलो", unit_en: "Kg", price: 1, minQty: 10, icon: "🍚", emoji: "⚪", description: "बेसिक खाने के लिए", description_en: "For basic meals" },
+        { id: 6, category: "चावल", name: "मध्यम चावल", name_en: "Medium Rice", unit: "किलो", unit_en: "Kg", price: 2, minQty: 5, icon: "🍚", emoji: "⚪", description: "दैनिक उपयोग के लिए", description_en: "For daily use" },
+        { id: 7, category: "चावल", name: "बासमती चावल", name_en: "Basmati Rice", unit: "किलो", unit_en: "Kg", price: 100, minQty: 1, icon: "🍚", emoji: "⚪", description: "लंबे दाने, सुगंधित", description_en: "Long grain, aromatic" },
+        { id: 8, category: "आटा", name: "सस्ता आटा", name_en: "Economy Flour", unit: "किलो", unit_en: "Kg", price: 3, minQty: 3, icon: "🌾", emoji: "🟡", description: "बेसिक रोटी के लिए", description_en: "For basic roti" },
+        { id: 9, category: "आटा", name: "गेहूं आटा", name_en: "Wheat Flour", unit: "किलो", unit_en: "Kg", price: 40, minQty: 1, icon: "🌾", emoji: "🟡", description: "ताजा पिसा हुआ", description_en: "Freshly ground" },
+        { id: 10, category: "मसाला", name: "सस्ती हल्दी", name_en: "Economy Turmeric", unit: "50 ग्राम", unit_en: "50 gm", price: 4, minQty: 2, icon: "🌶️", emoji: "🟡", description: "प्राकृतिक, शुद्ध", description_en: "Natural, pure" },
+        { id: 11, category: "मसाला", name: "हल्दी पाउडर", name_en: "Turmeric Powder", unit: "100 ग्राम", unit_en: "100 gm", price: 20, minQty: 1, icon: "🌶️", emoji: "🟡", description: "एंटी-इंफ्लेमेटरी गुण", description_en: "Anti-inflammatory properties" },
+        { id: 12, category: "मसाला", name: "धनिया पाउडर", name_en: "Coriander Powder", unit: "100 ग्राम", unit_en: "100 gm", price: 25, minQty: 1, icon: "🌶️", emoji: "🟢", description: "सुगंधित, ताजा", description_en: "Aromatic, fresh" },
+        { id: 13, category: "तेल", name: "सस्ता तेल", name_en: "Economy Oil", unit: "500 ml", unit_en: "500 ml", price: 5, minQty: 2, icon: "🛢️", emoji: "🟡", description: "बेसिक कुकिंग ऑयल", description_en: "Basic cooking oil" },
+        { id: 14, category: "तेल", name: "सरसों तेल", name_en: "Mustard Oil", unit: "लीटर", unit_en: "Litre", price: 180, minQty: 1, icon: "🛢️", emoji: "🟡", description: "शुद्ध, तीखी खुशबू", description_en: "Pure, pungent aroma" },
+        { id: 15, category: "तेल", name: "सोयाबीन तेल", name_en: "Soybean Oil", unit: "लीटर", unit_en: "Litre", price: 160, minQty: 1, icon: "🛢️", emoji: "🟡", description: "हल्का, स्वस्थ", description_en: "Light, healthy" },
+        { id: 16, category: "नमकीन", name: "मिक्स नमकीन", name_en: "Mix Namkeen", unit: "पैकेट", unit_en: "Packet", price: 50, minQty: 1, icon: "🥨", emoji: "🟠", description: "विभिन्न स्वाद", description_en: "Various flavors" },
+        { id: 17, category: "नमकीन", name: "भुजिया", name_en: "Bhujia", unit: "पैकेट", unit_en: "Packet", price: 40, minQty: 1, icon: "🥨", emoji: "🟠", description: "कुरकुरा, स्वादिष्ट", description_en: "Crispy, tasty" },
+        { id: 18, category: "नमकीन", name: "चिवड़ा", name_en: "Chivda", unit: "पैकेट", unit_en: "Packet", price: 35, minQty: 1, icon: "🥨", emoji: "🟡", description: "हल्का नाश्ता", description_en: "Light snack" },
+        { id: 19, category: "चीनी", name: "सफेद चीनी", name_en: "White Sugar", unit: "किलो", unit_en: "Kg", price: 45, minQty: 1, icon: "🍬", emoji: "⚪", description: "शुद्ध, दानेदार", description_en: "Pure, granular" },
+        { id: 20, category: "चीनी", name: "ब्राउन शुगर", name_en: "Brown Sugar", unit: "किलो", unit_en: "Kg", price: 60, minQty: 1, icon: "🍬", emoji: "🟤", description: "कम प्रोसेस्ड, स्वस्थ", description_en: "Less processed, healthy" }
+    ];
+
+     // Categories with Emojis
+    const categories = [
+        { id: "all", name: "सभी उत्पाद", name_en: "All Products", icon: "fas fa-th-large", color: "#4caf50", emoji: "🌟" },
+        { id: "दाल", name: "दालें", name_en: "Pulses", icon: "fas fa-seedling", color: "#8bc34a", emoji: "🟡" },
+        { id: "चावल", name: "चावल", name_en: "Rice", icon: "fas fa-rice", color: "#ffcc80", emoji: "⚪" },
+        { id: "आटा", name: "आटा", name_en: "Flour", icon: "fas fa-wheat-awn", color: "#ffab91", emoji: "🟡" },
+        { id: "मसाला", name: "मसाले", name_en: "Spices", icon: "fas fa-mortar-pestle", color: "#ffcdd2", emoji: "🔴" },
+        { id: "तेल", name: "तेल", name_en: "Oil", icon: "fas fa-oil-can", color: "#fff9c4", emoji: "🟡" },
+        { id: "नमकीन", name: "नमकीन", name_en: "Snacks", icon: "fas fa-cookie-bite", color: "#e1bee7", emoji: "🟠" },
+        { id: "चीनी", name: "चीनी", name_en: "Sugar", icon: "fas fa-cube", color: "#f5f5f5", emoji: "⚪" }
+    ];
+
+    // Application State
+    let cart = {};
+    let currentColony = "Swaraj Colony";
+    let currentLanguage = "hi";
+    let userLocation = null;
+    let uploadedImage = null;
+    
+    // DOM Elements
+    const categoriesContainer = document.getElementById('categoriesContainer');
+    const itemsGrid = document.getElementById('itemsGrid');
+    const cartCount = document.getElementById('cartCount');
+    const fixedOrderBtn = document.getElementById('fixedOrderBtn');
+    const cartPreviewModal = document.getElementById('cartPreviewModal');
+    const cartItemsList = document.getElementById('cartItemsList');
+    const previewTotalItems = document.getElementById('previewTotalItems');
+    const previewSubtotal = document.getElementById('previewSubtotal');
+    const previewDelivery = document.getElementById('previewDelivery');
+    const previewTotalAmount = document.getElementById('previewTotalAmount');
+    const deliveryInfoRow = document.getElementById('deliveryInfoRow');
+    const orderFormModal = document.getElementById('orderFormModal');
+    const orderSummaryContent = document.getElementById('orderSummaryContent');
+    const orderFormDelivery = document.getElementById('orderFormDelivery');
+    const orderFormTotal = document.getElementById('orderFormTotal');
+    const submitOrderBtn = document.getElementById('submitOrderBtn');
+    const successModal = document.getElementById('successModal');
+    const toast = document.getElementById('toast');
+    const toastMessage = document.getElementById('toastMessage');
+    const searchInput = document.getElementById('searchInput');
+    const colonyName = document.getElementById('colonyName');
+    const orderId = document.getElementById('orderId');
+    const offerPopup = document.getElementById('offerPopup');
+    const offerTimer = document.getElementById('offerTimer');
+    const locationDisplay = document.getElementById('locationDisplay');
+    const locationText = document.getElementById('locationText');
+    const imageUpload = document.getElementById('imageUpload');
+    const imagePreview = document.getElementById('imagePreview');
+    const previewImage = document.getElementById('previewImage');
+
+    // Initialize the application
+    function initApp() {
+        // Check language preference
+        const savedLanguage = localStorage.getItem('language');
+        if (savedLanguage) {
+            currentLanguage = savedLanguage;
+            updateLanguageButtons();
+        }
+        
+        // Check if user is from Swaraj Colony
+        const savedColony = localStorage.getItem('userColony');
+        
+        if (savedColony) {
+            currentColony = savedColony;
+            colonyName.textContent = currentColony;
+        } else {
+            showWelcomeMessage();
+        }
+        
+        // Load cart from localStorage
+        const savedCart = localStorage.getItem('cart');
+        if (savedCart) {
+            cart = JSON.parse(savedCart);
+        }
+        
+        // Load customer info and auto-fill
+        loadCustomerInfo();
+        
+        // Render everything
+        updateAllTexts();
+        renderCategories();
+        renderProducts();
+        updateCartDisplay();
+        
+        // Event listeners
+        searchInput.addEventListener('input', filterProducts);
+        
+        // Image upload listener
+        imageUpload.addEventListener('change', handleImageUpload);
+        
+        // Show offer popup after 2 seconds
+        setTimeout(() => {
+            showOfferPopup();
+        }, 2000);
+        
+        // Start offer timer
+        startOfferTimer();
+        
+        // Focus on search box
+        setTimeout(() => {
+            searchInput.focus();
+        }, 500);
+    }
+
+    // Language functions
+    function changeLanguage(lang) {
+        currentLanguage = lang;
+        localStorage.setItem('language', lang);
+        updateLanguageButtons();
+        updateAllTexts();
+        renderProducts();
+        renderCategories();
+    }
+
+    function updateLanguageButtons() {
+        document.querySelectorAll('.lang-btn').forEach(btn => {
+            btn.classList.remove('active');
+            if (btn.textContent === (currentLanguage === 'hi' ? 'हिंदी' : 'English')) {
+                btn.classList.add('active');
+            }
+        });
+    }
+
+    function updateAllTexts() {
+        const lang = strings[currentLanguage];
+        
+        // Update all text elements
+        document.querySelectorAll('[id]').forEach(element => {
+            const id = element.id;
+            if (lang[id]) {
+                if (element.tagName === 'INPUT' || element.tagName === 'TEXTAREA') {
+                    element.placeholder = lang[id];
+                } else {
+                    element.innerHTML = lang[id];
+                }
+            }
+        });
+        
+        // Special cases
+        document.getElementById('appTitle').textContent = lang.appTitle;
+        document.getElementById('appSubtitle').textContent = lang.appSubtitle;
+        document.getElementById('searchInput').placeholder = currentLanguage === 'hi' 
+            ? "क्या खरीदना चाहते हैं? यहाँ लिखें..." 
+            : "What do you want to buy? Type here...";
+    }
+
+    // Show welcome message
+    function showWelcomeMessage() {
+        const message = currentLanguage === 'hi' 
+            ? "👋 नमस्ते! आप किस कॉलोनी से हैं?\n\nउदाहरण: Swaraj Colony"
+            : "👋 Hello! Which colony are you from?\n\nExample: Swaraj Colony";
+            
+        const colony = prompt(message);
+        if (colony) {
+            if (colony.toLowerCase().includes("swaraj") || colony.toLowerCase().includes("colony")) {
+                currentColony = colony;
+                localStorage.setItem('userColony', colony);
+                colonyName.textContent = currentColony;
+                showToast(currentLanguage === 'hi' 
+                    ? `🎉 स्वागत है! ${colony} से आपका ऑर्डर स्वीकार किया गया है।`
+                    : `🎉 Welcome! Your order from ${colony} has been accepted.`);
+            } else {
+                const errorMsg = currentLanguage === 'hi'
+                    ? "❌ क्षमा करें! सेवा सिर्फ Swaraj Colony के लिए है।"
+                    : "❌ Sorry! Service is only for Swaraj Colony.";
+                alert(errorMsg);
+                
+                const errorHTML = currentLanguage === 'hi'
+                    ? `<div style="text-align:center; padding:50px; font-size:18px; background: linear-gradient(135deg, #f5f7fa, #c3cfe2); min-height:100vh; display:flex; flex-direction:column; justify-content:center; align-items:center;">
+                        <div style="font-size:80px; margin-bottom:20px;">🏠</div>
+                        <h2 style="color:#d32f2f;">❌ सेवा सिर्फ Swaraj Colony के लिए</h2>
+                        <p style="margin-top:20px; color:#555;">कृपया किसी Swaraj Colony निवासी से संपर्क करें।</p>
+                        <button onclick="location.reload()" style="margin-top:30px; padding:15px 30px; background:#0a8f3c; color:white; border:none; border-radius:10px; font-size:18px; cursor:pointer;">
+                            🔄 फिर से कोशिश करें
+                        </button>
+                    </div>`
+                    : `<div style="text-align:center; padding:50px; font-size:18px; background: linear-gradient(135deg, #f5f7fa, #c3cfe2); min-height:100vh; display:flex; flex-direction:column; justify-content:center; align-items:center;">
+                        <div style="font-size:80px; margin-bottom:20px;">🏠</div>
+                        <h2 style="color:#d32f2f;">❌ Service only for Swaraj Colony</h2>
+                        <p style="margin-top:20px; color:#555;">Please contact a Swaraj Colony resident.</p>
+                        <button onclick="location.reload()" style="margin-top:30px; padding:15px 30px; background:#0a8f3c; color:white; border:none; border-radius:10px; font-size:18px; cursor:pointer;">
+                            🔄 Try Again
+                        </button>
+                    </div>`;
+                    
+                document.body.innerHTML = errorHTML;
+                return;
+            }
+        }
+    }
+
+    // Offer popup functions
+    function showOfferPopup() {
+        const today = new Date().getDate();
+        const lastSeen = localStorage.getItem('lastOfferSeen');
+        
+        // Show only once per day
+        if (lastSeen !== today.toString()) {
+            offerPopup.classList.add('active');
+        }
+    }
+
+    function closeOfferPopup() {
+        offerPopup.classList.remove('active');
+        const today = new Date().getDate();
+        localStorage.setItem('lastOfferSeen', today.toString());
+    }
+
+    function startOfferTimer() {
+        // Set timer for 24 hours from now
+        const endTime = new Date();
+        endTime.setHours(23, 59, 59, 999);
+        
+        function updateTimer() {
+            const now = new Date();
+            const diff = endTime - now;
+            
+            if (diff <= 0) {
+                offerTimer.textContent = currentLanguage === 'hi' 
+                    ? "⏰ ऑफर समाप्त!" 
+                    : "⏰ Offer Expired!";
+                return;
+            }
+            
+            const hours = Math.floor(diff / (1000 * 60 * 60));
+            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+            
+            offerTimer.textContent = currentLanguage === 'hi'
+                ? `⏰ ऑफर समाप्त होने में: ${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`
+                : `⏰ Offer ends in: ${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+        
+        updateTimer();
+        setInterval(updateTimer, 1000);
+    }
+
+    // Location functions
+    function getUserLocation() {
+        if (!navigator.geolocation) {
+            showToast(currentLanguage === 'hi' 
+                ? "⚠️ आपका ब्राउज़र लोकेशन सपोर्ट नहीं करता" 
+                : "⚠️ Your browser doesn't support location");
+            return;
+        }
+        
+        showToast(currentLanguage === 'hi' 
+            ? "📍 आपका स्थान प्राप्त किया जा रहा है..." 
+            : "📍 Getting your location...");
+        
+        navigator.geolocation.getCurrentPosition(
+            async (position) => {
+                const lat = position.coords.latitude;
+                const lng = position.coords.longitude;
+                
+                try {
+                    // Get address from coordinates
+                    const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`);
+                    const data = await response.json();
+                    
+                    userLocation = {
+                        lat: lat,
+                        lng: lng,
+                        address: data.display_name || `${lat.toFixed(6)}, ${lng.toFixed(6)}`
+                    };
+                    
+                    locationText.textContent = userLocation.address;
+                    locationDisplay.classList.add('active');
+                    
+                    showToast(currentLanguage === 'hi' 
+                        ? "✅ आपका स्थान सफलतापूर्वक प्राप्त हो गया" 
+                        : "✅ Your location obtained successfully");
+                } catch (error) {
+                    console.error("Geocoding error:", error);
+                    userLocation = {
+                        lat: lat,
+                        lng: lng,
+                        address: `${lat.toFixed(6)}, ${lng.toFixed(6)}`
+                    };
+                    
+                    locationText.textContent = userLocation.address;
+                    locationDisplay.classList.add('active');
+                    
+                    showToast(currentLanguage === 'hi' 
+                        ? "📍 स्थान प्राप्त (मैन्युअल)" 
+                        : "📍 Location obtained (manual)");
+                }
+            },
+            (error) => {
+                console.error("Geolocation error:", error);
+                showToast(currentLanguage === 'hi' 
+                    ? "❌ स्थान प्राप्त करने में त्रुटि" 
+                    : "❌ Error getting location");
+            }
+        );
+    }
+
+    // Image upload functions
+    function handleImageUpload(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+        
+        if (!file.type.startsWith('image/')) {
+            showToast(currentLanguage === 'hi' 
+                ? "❌ कृपया सिर्फ इमेज फाइल चुनें" 
+                : "❌ Please select only image files");
+            return;
+        }
+        
+        if (file.size > 5 * 1024 * 1024) { // 5MB limit
+            showToast(currentLanguage === 'hi' 
+                ? "❌ इमेज 5MB से बड़ी नहीं होनी चाहिए" 
+                : "❌ Image should not exceed 5MB");
+            return;
+        }
+        
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            uploadedImage = {
+                data: e.target.result,
+                name: file.name,
+                type: file.type
+            };
+            
+            previewImage.src = e.target.result;
+            imagePreview.style.display = 'block';
+            
+            showToast(currentLanguage === 'hi' 
+                ? "✅ इमेज अपलोड सफल" 
+                : "✅ Image uploaded successfully");
+        };
+        
+        reader.readAsDataURL(file);
+    }
+
+    // Get minimum quantity for a price
+    function getMinimumQuantity(price) {
+        if (price <= 5) {
+            return MIN_QUANTITY_RULES[price] || 1;
+        }
+        return 1;
+    }
+
+    // Render categories with emojis
+    function renderCategories() {
+        categoriesContainer.innerHTML = '';
+        
+        categories.forEach(category => {
+            // Count products in this category
+            const productCount = products.filter(p => category.id === "all" || p.category === category.id).length;
+            
+            const categoryCard = document.createElement('div');
+            categoryCard.className = 'category-card';
+            categoryCard.setAttribute('data-category', category.id);
+            categoryCard.innerHTML = `
+                <div class="category-icon" style="background:${category.color}; color:white;">
+                    <i class="${category.icon}"></i>
+                </div>
+                <div class="category-name">${currentLanguage === 'hi' ? category.name : category.name_en}</div>
+                <div class="category-count">${productCount} ${currentLanguage === 'hi' ? 'आइटम' : 'items'}</div>
+            `;
+            
+            categoryCard.addEventListener('click', () => filterByCategory(category.id));
+            
+            // Set first category as active
+            if (category.id === 'all') {
+                categoryCard.classList.add('active');
+            }
+            
+            categoriesContainer.appendChild(categoryCard);
+        });
+    }
+
+    // Render products with bilingual support
+    function renderProducts(filteredProducts = products) {
+        itemsGrid.innerHTML = '';
+        
+        if (filteredProducts.length === 0) {
+            const noProductsText = currentLanguage === 'hi' 
+                ? `"${searchInput.value}" से मेल खाने वाला कोई उत्पाद नहीं है`
+                : `No products match "${searchInput.value}"`;
+                
+            itemsGrid.innerHTML = `
+                <div class="empty-state">
+                    <i class="fas fa-search"></i>
+                    <h3>${currentLanguage === 'hi' ? 'कोई उत्पाद नहीं मिला' : 'No products found'}</h3>
+                    <p>${noProductsText}</p>
+                </div>
+            `;
+            return;
+        }
+        
+        filteredProducts.forEach(product => {
+            const itemCard = document.createElement('div');
+            itemCard.className = 'item-card';
+            itemCard.setAttribute('data-category', product.category);
+            
+            // Get quantity from cart
+            let quantity = 0;
+            if (cart[product.category] && cart[product.category][product.name]) {
+                quantity = cart[product.category][product.name].quantity;
+            }
+            
+            // Get minimum quantity for this price
+            const minQty = getMinimumQuantity(product.price);
+            
+            itemCard.innerHTML = `
+                <div class="item-image">
+                    ${product.icon}
+                    <button class="upload-image-btn" onclick="uploadItemImage(${product.id})" title="${currentLanguage === 'hi' ? 'इस आइटम की इमेज जोड़ें' : 'Add image for this item'}">
+                        <i class="fas fa-camera"></i>
+                    </button>
+                </div>
+                <div class="price-badge">₹${product.price}</div>
+                <div class="min-qty-badge">${currentLanguage === 'hi' ? 'कम से कम' : 'Min'} ${minQty} ${currentLanguage === 'hi' ? 'पीस' : 'pcs'}</div>
+                <div class="item-body">
+                    <h3 class="item-name">${product.emoji} ${currentLanguage === 'hi' ? product.name : product.name_en}</h3>
+                    <div class="item-description">${currentLanguage === 'hi' ? product.description : product.description_en}</div>
+                    <div class="item-price">₹${product.price} <span>${currentLanguage === 'hi' ? 'प्रति' : 'per'} ${currentLanguage === 'hi' ? product.unit : product.unit_en}</span></div>
+                    <div class="item-controls">
+                        <div class="qty-controls">
+                            <button class="qty-btn" onclick="decrementItem('${product.category}', '${product.name}', ${product.price}, '${currentLanguage === 'hi' ? product.unit : product.unit_en}', ${product.id}, ${minQty})">
+                                <i class="fas fa-minus"></i>
+                            </button>
+                            <div class="qty-display" id="qty-${product.id}">${quantity}</div>
+                            <button class="qty-btn" onclick="addToCart('${product.category}', '${product.name}', ${product.price}, '${currentLanguage === 'hi' ? product.unit : product.unit_en}', ${product.id}, ${minQty})">
+                                <i class="fas fa-plus"></i>
+                            </button>
+                        </div>
+                        <button class="add-to-cart" onclick="addToCart('${product.category}', '${product.name}', ${product.price}, '${currentLanguage === 'hi' ? product.unit : product.unit_en}', ${product.id}, ${minQty})">
+                            <i class="fas fa-cart-plus"></i>
+                            <span>${currentLanguage === 'hi' ? 'जोड़ें' : 'Add'}</span>
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            itemsGrid.appendChild(itemCard);
+        });
+    }
+
+    // Upload item image (placeholder function)
+    function uploadItemImage(productId) {
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = 'image/*';
+        input.onchange = function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    // In a real app, you would save this image
+                    showToast(currentLanguage === 'hi' 
+                        ? `✅ आइटम इमेज सेव की गई` 
+                        : `✅ Item image saved`);
+                };
+                reader.readAsDataURL(file);
+            }
+        };
+        input.click();
+    }
+
+    // Filter products by category
+    function filterByCategory(categoryId) {
+        // Update active category button
+        document.querySelectorAll('.category-card').forEach(card => {
+            card.classList.remove('active');
+            if (card.getAttribute('data-category') === categoryId) {
+                card.classList.add('active');
+            }
+        });
+        
+        // Filter products
+        if (categoryId === 'all') {
+            renderProducts(products);
+        } else {
+            const filteredProducts = products.filter(product => product.category === categoryId);
+            renderProducts(filteredProducts);
+        }
+    }
+
+    // Filter products by search
+    function filterProducts() {
+        const searchTerm = searchInput.value.toLowerCase();
+        
+        if (searchTerm.trim() === '') {
+            // If search is empty, show products based on active category
+            const activeCategory = document.querySelector('.category-card.active').getAttribute('data-category');
+            if (activeCategory === 'all') {
+                renderProducts(products);
+            } else {
+                const filteredProducts = products.filter(product => product.category === activeCategory);
+                renderProducts(filteredProducts);
+            }
+            return;
+        }
+        
+        const filteredProducts = products.filter(product => 
+            product.name.toLowerCase().includes(searchTerm) || 
+            product.name_en.toLowerCase().includes(searchTerm) ||
+            product.category.toLowerCase().includes(searchTerm) ||
+            product.description.toLowerCase().includes(searchTerm) ||
+            product.description_en.toLowerCase().includes(searchTerm)
+        );
+        
+        renderProducts(filteredProducts);
+    }
+
+    // Calculate delivery charge based on new rules
+    function calculateDeliveryCharge(totalPrice) {
+        if (totalPrice < 100) {
+            return 20;
+        } else {
+            return 10;
+        }
+    }
+
+    // Cart functions with minimum quantity enforcement
+    function addToCart(category, name, price, unit, productId, minQty) {
+        // Play sound
+        playSound('add');
+        
+        if (!cart[category]) {
+            cart[category] = {};
+        }
+        
+        if (!cart[category][name]) {
+            // First time adding this item - set to minimum quantity
+            cart[category][name] = {
+                quantity: minQty,
+                price: price,
+                unit: unit,
+                productId: productId,
+                minQty: minQty
+            };
+        } else {
+            // Already in cart - just increment
+            cart[category][name].quantity++;
+        }
+        
+        updateQuantityDisplay(productId, cart[category][name].quantity);
+        saveCart();
+        updateCartDisplay();
+        
+        const message = currentLanguage === 'hi' 
+            ? `🎉 ${name} कार्ट में जोड़ा गया! (न्यूनतम: ${minQty})`
+            : `🎉 ${name} added to cart! (Minimum: ${minQty})`;
+        showToast(message);
+    }
+
+    function decrementItem(category, name, price, unit, productId, minQty) {
+        // Play sound
+        playSound('remove');
+        
+        if (cart[category] && cart[category][name]) {
+            // Check if current quantity is more than minimum
+            if (cart[category][name].quantity > minQty) {
+                cart[category][name].quantity--;
+                updateQuantityDisplay(productId, cart[category][name].quantity);
+                saveCart();
+                updateCartDisplay();
+                
+                const message = currentLanguage === 'hi' 
+                    ? `➖ ${name} कार्ट से हटाया गया`
+                    : `➖ ${name} removed from cart`;
+                showToast(message);
+            } else {
+                // At minimum quantity - ask if user wants to remove
+                const confirmMsg = currentLanguage === 'hi' 
+                    ? `क्या आप ${name} को पूरी तरह से कार्ट से हटाना चाहते हैं?\n\nन्यूनतम ${minQty} पीस जोड़ने होंगे।`
+                    : `Do you want to completely remove ${name} from cart?\n\nMinimum ${minQty} pieces required.`;
+                    
+                if (confirm(confirmMsg)) {
+                    delete cart[category][name];
+                    if (Object.keys(cart[category]).length === 0) {
+                        delete cart[category];
+                    }
+                    updateQuantityDisplay(productId, 0);
+                    saveCart();
+                    updateCartDisplay();
+                    
+                    const message = currentLanguage === 'hi' 
+                        ? `🗑️ ${name} कार्ट से हटाया गया`
+                        : `🗑️ ${name} removed from cart`;
+                    showToast(message);
+                }
+            }
+        }
+    }
+
+    function removeCartItem(category, name, productId) {
+        // Play sound
+        playSound('remove');
+        
+        if (cart[category] && cart[category][name]) {
+            updateQuantityDisplay(productId, 0);
+            delete cart[category][name];
+            if (Object.keys(cart[category]).length === 0) {
+                delete cart[category];
+            }
+            
+            saveCart();
+            updateCartDisplay();
+            updateCartPreview();
+            
+            const message = currentLanguage === 'hi' 
+                ? `🗑️ ${name} कार्ट से हटाया गया`
+                : `🗑️ ${name} removed from cart`;
+            showToast(message);
+        }
+    }
+
+    function updateQuantityDisplay(productId, quantity) {
+        const qtyElement = document.getElementById(`qty-${productId}`);
+        if (qtyElement) {
+            qtyElement.textContent = quantity;
+        }
+    }
+
+    function updateCartDisplay() {
+        // Calculate totals
+        let totalCount = 0;
+        let totalPrice = 0;
+        
+        for (const category in cart) {
+            for (const item in cart[category]) {
+                totalCount += cart[category][item].quantity;
+                totalPrice += cart[category][item].quantity * cart[category][item].price;
+            }
+        }
+        
+        // Update cart count
+        cartCount.textContent = totalCount;
+        
+        // Calculate delivery charge based on new rules
+        const deliveryCharge = calculateDeliveryCharge(totalPrice);
+        
+        // Enable/disable order button
+        if (totalCount > 0) {
+            fixedOrderBtn.disabled = false;
+            const buttonText = currentLanguage === 'hi' 
+                ? `ऑर्डर सबमिट करें (₹${totalPrice + deliveryCharge})`
+                : `Submit Order (₹${totalPrice + deliveryCharge})`;
+            fixedOrderBtn.innerHTML = `
+                <i class="fas fa-paper-plane"></i>
+                <span>${buttonText}</span>
+                <i class="fas fa-arrow-right"></i>
+            `;
+        } else {
+            fixedOrderBtn.disabled = true;
+            const buttonText = currentLanguage === 'hi' 
+                ? "पहले कार्ट में आइटम जोड़ें"
+                : "Add items to cart first";
+            fixedOrderBtn.innerHTML = `
+                <i class="fas fa-shopping-cart"></i>
+                <span>${buttonText}</span>
+            `;
+        }
+        
+        // Save cart
+        saveCart();
+    }
+
+    function updateCartPreview() {
+        let cartHTML = '';
+        let totalCount = 0;
+        let totalPrice = 0;
+        
+        for (const category in cart) {
+            for (const item in cart[category]) {
+                const itemData = cart[category][item];
+                const itemTotal = itemData.quantity * itemData.price;
+                totalCount += itemData.quantity;
+                totalPrice += itemTotal;
+                
+                const minQtyText = currentLanguage === 'hi' 
+                    ? `न्यूनतम ${itemData.minQty || 1} पीस`
+                    : `Min ${itemData.minQty || 1} pcs`;
+                
+                cartHTML += `
+                    <div class="cart-item">
+                        <div class="cart-item-info">
+                            <h4>${item}</h4>
+                            <div class="category">${category} • ${itemData.unit} • ${minQtyText}</div>
+                            <div class="cart-item-qty">
+                                <button class="cart-item-qty-btn" onclick="decrementItem('${category}', '${item}', ${itemData.price}, '${itemData.unit}', ${itemData.productId}, ${itemData.minQty || 1})">
+                                    -
+                                </button>
+                                <span>${itemData.quantity}</span>
+                                <button class="cart-item-qty-btn" onclick="addToCart('${category}', '${item}', ${itemData.price}, '${itemData.unit}', ${itemData.productId}, ${itemData.minQty || 1})">
+                                    +
+                                </button>
+                            </div>
+                        </div>
+                        <div class="cart-item-controls">
+                            <div class="cart-item-price">₹${itemTotal}</div>
+                            <button class="cart-item-qty-btn" style="background:#f44336; color:white;" onclick="removeCartItem('${category}', '${item}', ${itemData.productId})">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+        
+        if (totalCount === 0) {
+            const emptyTitle = currentLanguage === 'hi' ? 'आपकी टोकरी खाली है' : 'Your cart is empty';
+            const emptyText = currentLanguage === 'hi' ? 'उत्पाद जोड़ने के लिए + बटन पर क्लिक करें' : 'Click + button to add products';
+            
+            cartItemsList.innerHTML = `
+                <div class="empty-state" style="padding: 30px;">
+                    <i class="fas fa-shopping-basket"></i>
+                    <h3>${emptyTitle}</h3>
+                    <p>${emptyText}</p>
+                </div>
+            `;
+        } else {
+            cartItemsList.innerHTML = cartHTML;
+        }
+        
+        // Calculate delivery charge based on new rules
+        const deliveryCharge = calculateDeliveryCharge(totalPrice);
+        const finalTotal = totalPrice + deliveryCharge;
+        
+        // Update summary
+        previewTotalItems.textContent = `${totalCount} ${currentLanguage === 'hi' ? 'आइटम' : 'items'}`;
+        previewSubtotal.textContent = `₹${totalPrice}`;
+        previewDelivery.textContent = `₹${deliveryCharge}`;
+        previewTotalAmount.textContent = `₹${finalTotal}`;
+        
+        // Update delivery info
+        if (totalPrice < 100) {
+            const label = currentLanguage === 'hi' ? 'डिलीवरी शुल्क (₹100 से कम):' : 'Delivery Charge (below ₹100):';
+            deliveryInfoRow.innerHTML = `<span>${label}</span><span>₹${deliveryCharge}</span>`;
+        } else {
+            const label = currentLanguage === 'hi' ? 'डिलीवरी शुल्क (₹100 या अधिक):' : 'Delivery Charge (₹100 or above):';
+            deliveryInfoRow.innerHTML = `<span>${label}</span><span>₹${deliveryCharge}</span>`;
+        }
+        
+        // Update order form summary
+        updateOrderSummary();
+    }
+
+    function updateOrderSummary() {
+        let totalCount = 0;
+        let totalPrice = 0;
+        let summaryHTML = '';
+        
+        for (const category in cart) {
+            summaryHTML += `<p><strong>${category}:</strong></p>`;
+            for (const item in cart[category]) {
+                const itemData = cart[category][item];
+                const itemTotal = itemData.quantity * itemData.price;
+                totalCount += itemData.quantity;
+                totalPrice += itemTotal;
+                
+                summaryHTML += `<p>${item} - ${itemData.quantity} ${itemData.unit} = ₹${itemTotal}</p>`;
+            }
+        }
+        
+        const deliveryCharge = calculateDeliveryCharge(totalPrice);
+        const finalTotal = totalPrice + deliveryCharge;
+        
+        const minQtyNote = currentLanguage === 'hi' 
+            ? `<p>न्यूनतम मात्रा नियम लागू हैं</p>`
+            : `<p>Minimum quantity rules applied</p>`;
+            
+        summaryHTML += minQtyNote;
+        orderSummaryContent.innerHTML = summaryHTML;
+        orderFormDelivery.textContent = `₹${deliveryCharge}`;
+        orderFormTotal.textContent = `₹${finalTotal}`;
+    }
+
+    function saveCart() {
+        localStorage.setItem('cart', JSON.stringify(cart));
+    }
+
+    // Load customer info from localStorage
+    function loadCustomerInfo() {
+        const customerName = localStorage.getItem('customerName');
+        const customerPhone = localStorage.getItem('customerPhone');
+        const customerAddress = localStorage.getItem('customerAddress');
+        
+        if (customerName) {
+            document.getElementById('customerName').value = customerName;
+        }
+        if (customerPhone) {
+            document.getElementById('customerPhone').value = customerPhone;
+        }
+        if (customerAddress) {
+            document.getElementById('customerAddress').value = customerAddress;
+        }
+    }
+
+    // Modal functions
+    function showCartPreview() {
+        updateCartPreview();
+        cartPreviewModal.classList.add('active');
+    }
+
+    function hideCartPreview() {
+        cartPreviewModal.classList.remove('active');
+    }
+
+    function showOrderForm() {
+        if (Object.keys(cart).length === 0) {
+            const message = currentLanguage === 'hi' 
+                ? "⚠️ कृपया पहले कार्ट में कुछ आइटम जोड़ें"
+                : "⚠️ Please add some items to cart first";
+            showToast(message);
+            return;
+        }
+        
+        // Calculate total
+        let totalPrice = 0;
+        for (const category in cart) {
+            for (const item in cart[category]) {
+                totalPrice += cart[category][item].quantity * cart[category][item].price;
+            }
+        }
+        
+        if (totalPrice < 100) {
+            const message = currentLanguage === 'hi' 
+                ? `⚠️ न्यूनतम ऑर्डर ₹100 का होना चाहिए। अभी: ₹${totalPrice}`
+                : `⚠️ Minimum order should be ₹100. Currently: ₹${totalPrice}`;
+            showToast(message);
+        }
+        
+        // Auto-fill customer info
+        loadCustomerInfo();
+        
+        // Update summary
+        updateOrderSummary();
+        
+        // Show modal
+        orderFormModal.classList.add('active');
+    }
+
+    function hideOrderForm() {
+        orderFormModal.classList.remove('active');
+    }
+
+    // Send to Telegram (with image support)
+    async function sendToTelegram(message, imageData = null) {
+        try {
+            let url = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
+            
+            // Send text message
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    chat_id: TELEGRAM_CHAT_ID,
+                    text: message,
+                    parse_mode: 'Markdown'
+                })
+            });
+            
+            const data = await response.json();
+            console.log("Telegram text response:", data);
+            
+            // Send image if available
+            if (imageData) {
+                await sendImageToTelegram(imageData);
+            }
+            
+            return data;
+        } catch (error) {
+            console.error("Telegram error:", error);
+            throw error;
+        }
+    }
+
+    // Send image to Telegram
+    async function sendImageToTelegram(imageData) {
+        try {
+            const formData = new FormData();
+            const blob = await fetch(imageData.data).then(r => r.blob());
+            
+            formData.append('chat_id', TELEGRAM_CHAT_ID);
+            formData.append('photo', blob, imageData.name);
+            formData.append('caption', '📸 Customer uploaded image');
+            
+            const response = await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendPhoto`, {
+                method: 'POST',
+                body: formData
+            });
+            
+            const data = await response.json();
+            console.log("Telegram image response:", data);
+            return data;
+        } catch (error) {
+            console.error("Telegram image error:", error);
+        }
+    }
+
+    // Submit order function
+    async function submitOrder() {
+        // Get form values
+        const customerName = document.getElementById('customerName').value.trim();
+        const customerPhone = document.getElementById('customerPhone').value.trim();
+        const customerAddress = document.getElementById('customerAddress').value.trim();
+        const deliveryTime = document.getElementById('deliveryTime').value;
+        const orderNotes = document.getElementById('orderNotes').value.trim();
+        
+        // Validation
+        if (!customerName || !customerPhone || !customerAddress) {
+            const message = currentLanguage === 'hi' 
+                ? "⚠️ कृपया नाम, फोन और पता भरें"
+                : "⚠️ Please fill name, phone and address";
+            showToast(message);
+            return;
+        }
+        
+        if (!/^\d{10}$/.test(customerPhone)) {
+            const message = currentLanguage === 'hi' 
+                ? "⚠️ कृपया सही 10-अंकीय फोन नंबर दर्ज करें"
+                : "⚠️ Please enter valid 10-digit phone number";
+            showToast(message);
+            return;
+        }
+        
+        // Disable submit button
+        submitOrderBtn.disabled = true;
+        const loadingText = currentLanguage === 'hi' 
+            ? "ऑर्डर भेजा जा रहा है..."
+            : "Sending order...";
+        submitOrderBtn.innerHTML = `
+            <i class="fas fa-spinner fa-spin"></i>
+            ${loadingText}
+        `;
+        
+        // Save customer info PERMANENTLY
+        localStorage.setItem('customerName', customerName);
+        localStorage.setItem('customerPhone', customerPhone);
+        localStorage.setItem('customerAddress', customerAddress);
+        localStorage.setItem('customerInfoSaved', 'true');
+        
+        // Prepare order message
+        let message = currentLanguage === 'hi' 
+            ? `🛒 *Banda Ki Seva - नया ऑर्डर* 🛒\n\n`
+            : `🛒 *Banda Ki Seva - New Order* 🛒\n\n`;
+            
+        message += `📝 *${currentLanguage === 'hi' ? 'ऑर्डर आईडी' : 'Order ID'}:* BKSR-${Date.now().toString().slice(-5)}\n`;
+        message += `👤 *${currentLanguage === 'hi' ? 'ग्राहक' : 'Customer'}:* ${customerName}\n`;
+        message += `📱 *${currentLanguage === 'hi' ? 'फोन' : 'Phone'}:* ${customerPhone}\n`;
+        message += `🏠 *${currentLanguage === 'hi' ? 'पता' : 'Address'}:* ${customerAddress}\n`;
+        message += `📍 *${currentLanguage === 'hi' ? 'कॉलोनी' : 'Colony'}:* ${currentColony}\n`;
+        message += `⏰ *${currentLanguage === 'hi' ? 'डिलीवरी समय' : 'Delivery Time'}:* ${deliveryTime}\n`;
+        
+        if (userLocation) {
+            message += `🗺️ *Google Maps:* https://maps.google.com/?q=${userLocation.lat},${userLocation.lng}\n`;
+            message += `📍 *${currentLanguage === 'hi' ? 'स्थान' : 'Location'}:* ${userLocation.address}\n`;
+        }
+        
+        if (orderNotes) {
+            message += `📋 *${currentLanguage === 'hi' ? 'निर्देश' : 'Instructions'}:* ${orderNotes}\n`;
+        }
+        
+        if (uploadedImage) {
+            message += `📸 *${currentLanguage === 'hi' ? 'इमेज अपलोडेड' : 'Image Uploaded'}:* Yes (${uploadedImage.name})\n`;
+        }
+        
+        message += `\n═══════════════\n`;
+        message += `🛍️ *${currentLanguage === 'hi' ? 'ऑर्डर विवरण' : 'Order Details'}:*\n\n`;
+        
+        let totalPrice = 0;
+        let itemCount = 0;
+        
+        for (const category in cart) {
+            message += `*${category}:*\n`;
+            for (const item in cart[category]) {
+                const itemData = cart[category][item];
+                const itemTotal = itemData.quantity * itemData.price;
+                message += `• ${item} - ${itemData.quantity} ${itemData.unit} = ₹${itemTotal}\n`;
+                totalPrice += itemTotal;
+                itemCount += itemData.quantity;
+            }
+            message += `\n`;
+        }
+        
+        const deliveryCharge = calculateDeliveryCharge(totalPrice);
+        const finalTotal = totalPrice + deliveryCharge;
+        
+        message += `═══════════════\n`;
+        message += `💰 *${currentLanguage === 'hi' ? 'सारांश' : 'Summary'}:*\n`;
+        message += `📦 ${currentLanguage === 'hi' ? 'कुल आइटम' : 'Total Items'}: ${itemCount}\n`;
+        message += `💵 ${currentLanguage === 'hi' ? 'उत्पाद मूल्य' : 'Product Value'}: ₹${totalPrice}\n`;
+        message += `🚚 ${currentLanguage === 'hi' ? 'डिलीवरी शुल्क' : 'Delivery Charge'}: ₹${deliveryCharge}\n`;
+        message += `🎯 *${currentLanguage === 'hi' ? 'कुल राशि' : 'Total Amount'}: ₹${finalTotal}*\n\n`;
+        
+        // Add delivery charge note
+        if (totalPrice < 100) {
+            message += `📝 *${currentLanguage === 'hi' ? 'नोट' : 'Note'}:* ${currentLanguage === 'hi' ? '₹100 से कम ऑर्डर पर ₹20 डिलीवरी चार्ज' : '₹20 delivery charge for orders below ₹100'}\n`;
+        } else {
+            message += `📝 *${currentLanguage === 'hi' ? 'नोट' : 'Note'}:* ${currentLanguage === 'hi' ? '₹100 या अधिक ऑर्डर पर ₹10 डिलीवरी चार्ज' : '₹10 delivery charge for orders ₹100 or above'}\n`;
+        }
+        
+        message += `🙏 ${currentLanguage === 'hi' ? 'धन्यवाद!' : 'Thank you!'}`;
+        
+        try {
+            // Send to Telegram
+            await sendToTelegram(message, uploadedImage);
+            
+            // Send to WhatsApp
+            sendToWhatsApp(message);
+            
+            // Generate random order ID
+            const randomOrderId = `BKSR-${Date.now().toString().slice(-6)}`;
+            orderId.textContent = randomOrderId;
+            
+            // Play success sound
+            playSound('success');
+            
+            // Hide order form
+            hideOrderForm();
+            hideCartPreview();
+            
+            // Clear cart
+            cart = {};
+            saveCart();
+            updateCartDisplay();
+            
+            // Clear uploaded image
+            uploadedImage = null;
+            imagePreview.style.display = 'none';
+            previewImage.src = '';
+            imageUpload.value = '';
+            
+            // Show success modal after delay
+            setTimeout(() => {
+                successModal.classList.add('active');
+            }, 500);
+            
+        } catch (error) {
+            console.error("Order submission error:", error);
+            const errorMsg = currentLanguage === 'hi' 
+                ? "❌ ऑर्डर भेजने में त्रुटि, कृपया फिर से कोशिश करें"
+                : "❌ Error sending order, please try again";
+            showToast(errorMsg);
+            submitOrderBtn.disabled = false;
+            submitOrderBtn.innerHTML = `
+                <i class="fas fa-check-circle"></i>
+                ${currentLanguage === 'hi' ? 'ऑर्डर सबमिट करें' : 'Submit Order'}
+            `;
+        }
+    }
+
+    // Send to WhatsApp
+    function sendToWhatsApp(message) {
+        const encodedMessage = encodeURIComponent(message);
+        const whatsappURL = `https://wa.me/${WHATSAPP_PHONE}?text=${encodedMessage}`;
+        
+        // Open in new tab
+        setTimeout(() => {
+            window.open(whatsappURL, '_blank');
+        }, 1000);
+    }
+
+    function hideSuccessModal() {
+        successModal.classList.remove('active');
+        location.reload();
+    }
+
+    // Toast notification
+    function showToast(message) {
+        toastMessage.textContent = message;
+        toast.classList.add('show');
+        
+        setTimeout(() => {
+            toast.classList.remove('show');
+        }, 3000);
+    }
+
+    // Sound effects
+    function playSound(type) {
+        try {
+            // Simple sound simulation
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            if (type === 'add') {
+                oscillator.frequency.value = 800;
+                gainNode.gain.value = 0.1;
+                oscillator.start();
+                setTimeout(() => oscillator.stop(), 100);
+            } else if (type === 'remove') {
+                oscillator.frequency.value = 400;
+                gainNode.gain.value = 0.1;
+                oscillator.start();
+                setTimeout(() => oscillator.stop(), 100);
+            } else if (type === 'success') {
+                oscillator.frequency.value = 1000;
+                gainNode.gain.value = 0.1;
+                oscillator.start();
+                setTimeout(() => {
+                    oscillator.frequency.value = 1200;
+                }, 100);
+                setTimeout(() => oscillator.stop(), 200);
+            }
+        } catch (e) {
+            console.log("Audio not supported");
+        }
+    }
+
+    // Initialize app
+    document.addEventListener('DOMContentLoaded', initApp);
+    
+    // Handle Enter key in search
+    searchInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            filterProducts();
+        }
+    });
+</script>
+</body>
+</html>
