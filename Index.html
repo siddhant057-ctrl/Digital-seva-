@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Banda Ki Seva | Kirana Order</title>
+
+<style>
+body{
+  margin:0;
+  font-family: Arial, sans-serif;
+  background:#f2f2f2;
+}
+header{
+  background:#0a8f3c;
+  color:#fff;
+  padding:12px;
+  text-align:center;
+  font-size:20px;
+  font-weight:bold;
+}
+.categories{
+  display:flex;
+  overflow-x:auto;
+  background:#fff;
+  padding:10px;
+}
+.cat-btn{
+  padding:8px 14px;
+  background:#eee;
+  border-radius:20px;
+  margin-right:8px;
+  font-size:14px;
+  cursor:pointer;
+  white-space:nowrap;
+}
+.cat-btn.active{
+  background:#0a8f3c;
+  color:#fff;
+}
+.items{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:10px;
+  padding:10px;
+}
+.item{
+  background:#fff;
+  border-radius:10px;
+  padding:8px;
+  text-align:center;
+  box-shadow:0 2px 6px rgba(0,0,0,.1);
+}
+.item img{
+  width:100%;
+  height:90px;
+  object-fit:contain;
+}
+.item h4{
+  margin:6px 0;
+  font-size:14px;
+}
+.qty{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+.qty button{
+  width:28px;
+  height:28px;
+  border:none;
+  background:#0a8f3c;
+  color:#fff;
+  font-size:18px;
+  border-radius:50%;
+}
+.cart{
+  position:fixed;
+  bottom:0;
+  left:0;
+  right:0;
+  background:#fff;
+  padding:10px;
+  box-shadow:0 -2px 6px rgba(0,0,0,.2);
+}
+.cart h3{
+  margin:0 0 5px 0;
+}
+.cart button{
+  width:100%;
+  padding:10px;
+  background:#25D366;
+  border:none;
+  color:#fff;
+  font-size:16px;
+  border-radius:8px;
+}
+</style>
+</head>
+
+<body>
+
+<script>
+let colony = prompt("आप किस कॉलोनी से हैं?");
+if(colony !== "Swaraj Colony"){
+  alert("❌ यह सेवा सिर्फ Swaraj Colony के लिए है");
+  document.body.innerHTML="";
+}
+</script>
+
+<header>🛒 Banda Ki Seva – Kirana Order</header>
+
+<div class="categories">
+  <div class="cat-btn active" onclick="filterCat('all')">सभी</div>
+  <div class="cat-btn" onclick="filterCat('दाल')">दाल</div>
+  <div class="cat-btn" onclick="filterCat('चावल')">चावल</div>
+  <div class="cat-btn" onclick="filterCat('आटा')">आटा</div>
+  <div class="cat-btn" onclick="filterCat('मसाला')">मसाला</div>
+  <div class="cat-btn" onclick="filterCat('तेल')">तेल</div>
+</div>
+
+<div class="items">
+
+<!-- दाल -->
+<div class="item" data-cat="दाल">
+<img src="https://i.imgur.com/1Q9Z1Zm.png">
+<h4>चना दाल</h4>
+<div class="qty">
+<button onclick="addItem('दाल','चना दाल')">+</button>
+<span id="चना दाल">0</span>
+<button onclick="removeItem('चना दाल')">−</button>
+</div>
+</div>
+
+<div class="item" data-cat="दाल">
+<img src="https://i.imgur.com/1Q9Z1Zm.png">
+<h4>अरहर दाल</h4>
+<div class="qty">
+<button onclick="addItem('दाल','अरहर दाल')">+</button>
+<span id="अरहर दाल">0</span>
+<button onclick="removeItem('अरहर दाल')">−</button>
+</div>
+</div>
+
+<!-- चावल -->
+<div class="item" data-cat="चावल">
+<img src="https://i.imgur.com/6KQ7Z6F.png">
+<h4>बासमती चावल</h4>
+<div class="qty">
+<button onclick="addItem('चावल','बासमती चावल')">+</button>
+<span id="बासमती चावल">0</span>
+<button onclick="removeItem('बासमती चावल')">−</button>
+</div>
+</div>
+
+<div class="item" data-cat="चावल">
+<img src="https://i.imgur.com/6KQ7Z6F.png">
+<h4>साधारण चावल</h4>
+<div class="qty">
+<button onclick="addItem('चावल','साधारण चावल')">+</button>
+<span id="साधारण चावल">0</span>
+<button onclick="removeItem('साधारण चावल')">−</button>
+</div>
+</div>
+
+<!-- आटा -->
+<div class="item" data-cat="आटा">
+<img src="https://i.imgur.com/9QZ9Z9Z.png">
+<h4>गेहूं आटा</h4>
+<div class="qty">
+<button onclick="addItem('आटा','गेहूं आटा')">+</button>
+<span id="गेहूं आटा">0</span>
+<button onclick="removeItem('गेहूं आटा')">−</button>
+</div>
+</div>
+
+<!-- मसाला -->
+<div class="item" data-cat="मसाला">
+<img src="https://i.imgur.com/V4RkZKp.png">
+<h4>हल्दी</h4>
+<div class="qty">
+<button onclick="addItem('मसाला','हल्दी')">+</button>
+<span id="हल्दी">0</span>
+<button onclick="removeItem('हल्दी')">−</button>
+</div>
+</div>
+
+<div class="item" data-cat="मसाला">
+<img src="https://i.imgur.com/V4RkZKp.png">
+<h4>धनिया</h4>
+<div class="qty">
+<button onclick="addItem('मसाला','धनिया')">+</button>
+<span id="धनिया">0</span>
+<button onclick="removeItem('धनिया')">−</button>
+</div>
+</div>
+
+<!-- तेल -->
+<div class="item" data-cat="तेल">
+<img src="https://i.imgur.com/4M34hi2.png">
+<h4>सरसों तेल</h4>
+<div class="qty">
+<button onclick="addItem('तेल','सरसों तेल')">+</button>
+<span id="सरसों तेल">0</span>
+<button onclick="removeItem('सरसों तेल')">−</button>
+</div>
+</div>
+
+</div>
+
+<div class="cart">
+<h3>🛒 Cart</h3>
+<div id="cartData">कोई आइटम नहीं</div>
+<button onclick="sendWhatsApp()">WhatsApp Order भेजें</button>
+</div>
+
+<script>
+let cart = {};
+
+function addItem(cat,name){
+ if(!cart[cat]) cart[cat]={};
+ cart[cat][name]=(cart[cat][name]||0)+1;
+ document.getElementById(name).innerText=cart[cat][name];
+ updateCart();
+}
+
+function removeItem(name){
+ for(let cat in cart){
+  if(cart[cat][name]){
+   cart[cat][name]--;
+   document.getElementById(name).innerText=cart[cat][name];
+   if(cart[cat][name]==0) delete cart[cat][name];
+  }
+ }
+ updateCart();
+}
+
+function updateCart(){
+ let html="";
+ for(let cat in cart){
+  html+="<b>"+cat+"</b><br>";
+  for(let item in cart[cat]){
+   html+=item+" : "+cart[cat][item]+"<br>";
+  }
+ }
+ document.getElementById("cartData").innerHTML=html || "कोई आइटम नहीं";
+}
+
+function sendWhatsApp(){
+ let msg="🛒 *Kirana Order*\n\n";
+ for(let cat in cart){
+  msg+="📌 "+cat+"\n";
+  for(let item in cart[cat]){
+   msg+="- "+item+" : "+cart[cat][item]+"\n";
+  }
+  msg+="\n";
+ }
+ window.open("https://wa.me/916351598832?text="+encodeURIComponent(msg));
+}
+
+function filterCat(cat){
+ document.querySelectorAll(".item").forEach(i=>{
+  i.style.display=(cat=="all"||i.dataset.cat==cat)?"block":"none";
+ });
+ document.querySelectorAll(".cat-btn").forEach(b=>b.classList.remove("active"));
+ event.target.classList.add("active");
+}
+</script>
+
+</body>
+</html>
